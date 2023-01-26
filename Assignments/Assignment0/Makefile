@@ -5,3 +5,6 @@ knights: knights_tour.c
 
 knights_i: knights_tour_improved.c
 	gcc -Wall -Werror knights_tour_improved.c -o knights_i
+
+clean:
+	rm -f knights knights_i *~ core

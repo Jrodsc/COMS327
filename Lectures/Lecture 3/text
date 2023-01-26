@@ -1,8 +1,0 @@
-cp -rv [original] [rodrigo_santamaria-assignment0]
-
-tar cvfz rodrigo_santamaria-assignment0.tar.gz [original]
-
-for decompression:
-    gzip -dc [dir] | tar xvf - 
-
-a|b (pipe) output of a will be input of b 
