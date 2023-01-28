@@ -1,0 +1,21 @@
+Project's explanation:
+
+I made two programs, the first one is "Knights-tour.c" which is the basic assignment.
+The second one is "Knights_tour_improved.c" where I include some extra challenges.
+
+Makefile explanation:
+
+"Knights_tour.c" compiles with the command 'make knights'.
+"Knights_tour_improved.c" compiles with the command 'make knights_i'.
+
+The binarys are called "knights" and "knights_i" respectively.
+
+Algorithm explanation:
+
+It is a Flood Fill (DFS) on a matrix, I used two arrays to define the knight's movements
+and a 1 to define save the path.
+
+For the improvements I used malloc to assigned the size of the arrays dinamically,
+and other elements and function like FILE, getline, etc.
+
+The program "Knights_tour.c" prints the output to stdout, and "Knights_tour_improved.c" to a file named "tours.txt".
