@@ -1,5 +1,12 @@
-pokemon: PokemonGame.c
-	gcc -Wall -Werror PokemonGame.c -o pokemon
+CC 			= gcc
+CFLAGS 		= -Wall -Werror
+OBJFILES	= queue.o main.o
+TARGET 		= PokemonGame
+
+all: $(TARGET)
+
+$(TARGET): $(OBJFILES)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES)
 
 clean: 
-	rm -f pokemon *~ core
+	rm -f $(OBJFILES) $(TARGET) *~ core
