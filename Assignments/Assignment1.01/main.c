@@ -43,11 +43,13 @@ int west_exit, east_exit, north_exit, south_exit, cross_r, cross_c;
 void search_ancestor(int r, int c){
     int a;
     while(!(r == cross_r && c == cross_c)){
-        printf("%d %d\n", r,c);
+        printf("%d %d\n", r, c);
         terrain[r][c] = '#';
         a = ancestor[r][c];
         r = a / COLUMNS;
         c = a % COLUMNS;
+
+        if(terrain[r][c] == '#') break;
     }
 }
         
@@ -80,11 +82,13 @@ void paths_generation(){
         r = u / COLUMNS;
         c = u % COLUMNS;
 
-        printf("%d %d\n", r,c);
+        printf("%d, %d\n", r, c);
 
         for(v = 0; v < 4 ; v++){
             tmp_r = r + offset_r[v];
             tmp_c = c + offset_c[v];
+
+            if(tmp_r < 0 || tmp_r > ROWS - 1 || tmp_c < 0 || tmp_c >= COLUMNS-1) continue;
 
             if(terrain[tmp_r][tmp_c] == '%') continue;
             if(dist[r][c] + (int)(terrain[tmp_r][tmp_c] - '0') < dist[tmp_r][tmp_c]){
@@ -98,13 +102,6 @@ void paths_generation(){
                 }
             }
         }
-    }
-
-    for(u = 0; u < ROWS; u++){
-        for(v = 0; v < COLUMNS; v++){
-            printf("%d ", dist[u][v]);
-        }
-        printf("\n");
     }
 
     search_ancestor(west_exit, 0);
@@ -145,8 +142,24 @@ void init(){
 
     terrain[west_exit][0] = terrain[east_exit][COLUMNS-2] = terrain[0][north_exit] = terrain[ROWS-1][south_exit] = '#';
 
-    cross_r = min(4 + rand()%ROWS, ROWS - 4);
-    cross_c = min(4 + rand()%COLUMNS, COLUMNS - 5);
+//    cross_r = min(4 + rand()%ROWS, ROWS - 4);
+//    cross_c = min(4 + rand()%COLUMNS, COLUMNS - 5);
+
+    int t = rand()%4;
+
+    if(t == 0){ //west
+        cross_r = west_exit;
+        cross_c = 0;
+    }else if(t == 1){ //east
+        cross_r = east_exit;
+        cross_c = COLUMNS-2;
+    }else if(t == 2){ // north
+        cross_r = 0;
+        cross_c = north_exit;
+    }else{
+        cross_r = ROWS - 1;
+        cross_c = south_exit;
+    }
 
     terrain[cross_r][cross_c] = 'X';
     
@@ -154,9 +167,10 @@ void init(){
     
     for(i = 1; i < ROWS-1; i++){
         for(j = 1; j < COLUMNS-2; j++){
-            if(terrain[i][j] >= '0') terrain[i][j] = ':';
+            if(terrain[i][j] == '0' || terrain[i][j] == '1') terrain[i][j] = ':';
         }
     }
+    terrain[cross_r][cross_c] = '#';
 }
 
 
