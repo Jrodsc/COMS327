@@ -12,7 +12,7 @@ typedef struct queue{
 } queue_t;
 
 int queue_enqueue_front(queue_t *q, int i);
-int queue_enqueue_back(queue_t *q, int i);
+int queue_enqueue(queue_t *q, int i);
 int queue_dequeue(queue_t *q, int *i);
 int queue_front(queue_t *q, int *i);
 int queue_length(queue_t *q);

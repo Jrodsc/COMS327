@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "queue.h"
 
-int queue_enqueue_back(queue_t *q, int i){
+int queue_enqueue(queue_t *q, int i){
     queue_node_t *n;
 
     if(!(n = malloc(sizeof(*n)))){

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "queue.h"
+#include <stdbool.h>
 
 #define INF 1000000000
 #define ROWS 21
@@ -29,6 +30,44 @@ int max(int a, int b){
     return b;
 }
 
+//color functions
+
+void red(){
+    printf("\033[0;31m");
+}
+
+void black(){
+    printf("\033[0;30m");
+}
+
+void green(){
+    printf("\033[0;32m");
+}
+
+void yellow(){
+    printf("\033[0;33m");
+}
+
+void blue(){
+    printf("\033[0;34m");
+}
+
+void purple(){
+    printf("\033[0;35m");
+}
+
+void cyan(){
+    printf("\033[0;36m");
+}
+
+void white(){
+    printf("\033[0;37m");
+}
+
+void reset(){
+    printf("\033[0m");
+}
+
 //Global variables
 
 char terrain[ROWS][COLUMNS];
@@ -43,7 +82,6 @@ int west_exit, east_exit, north_exit, south_exit, cross_r, cross_c;
 void search_ancestor(int r, int c){
     int a;
     while(!(r == cross_r && c == cross_c)){
-        printf("%d %d\n", r, c);
         terrain[r][c] = '#';
         a = ancestor[r][c];
         r = a / COLUMNS;
@@ -82,8 +120,6 @@ void paths_generation(){
         r = u / COLUMNS;
         c = u % COLUMNS;
 
-        printf("%d, %d\n", r, c);
-
         for(v = 0; v < 4 ; v++){
             tmp_r = r + offset_r[v];
             tmp_c = c + offset_c[v];
@@ -98,11 +134,13 @@ void paths_generation(){
                 if(terrain[tmp_r][tmp_c] == '0'){
                     queue_enqueue_front(&q, tmp_r * COLUMNS + tmp_c);
                 }else{
-                    queue_enqueue_back(&q, tmp_r * COLUMNS + tmp_c);
+                    queue_enqueue(&q, tmp_r * COLUMNS + tmp_c);
                 }
             }
         }
     }
+
+    queue_destroy(&q);
 
     search_ancestor(west_exit, 0);
     search_ancestor(east_exit, COLUMNS -2);
@@ -112,7 +150,135 @@ void paths_generation(){
     
 }
 
+void elements(){
+    int rgn_water = 1 + rand()%4;
+    int rgn_tllg  = 2 + rand()%3;
+    int rgn_shg   = 2 + rand()%3;
+    
+    int i;
 
+    queue_t q;
+
+    queue_init(&q);
+
+    int r,c;
+
+    for(i = 0; i < rgn_water; i++){
+        do{
+            r = 1 + rand()%(ROWS-2);
+            c = 1 + rand()%(COLUMNS - 3);
+        }while(terrain[r][c] == '~' || terrain[r][c] == '#');
+        terrain[r][c] = '~';
+        queue_enqueue(&q, r * COLUMNS + c);
+    }
+
+    for(i = 0; i < rgn_tllg; i++){
+        do{
+            r = 1 + rand()%(ROWS-2);
+            c = 1 + rand()%(COLUMNS - 3);
+        }while(terrain[r][c] == '~' || terrain[r][c] == '#' || terrain[r][c] == ':');
+        terrain[r][c] = ':';
+        queue_enqueue(&q, r * COLUMNS + c);
+    }
+
+    for(i = 0; i < rgn_shg; i++){
+        do{
+            r = 1 + rand()%(ROWS-2);
+            c = 1 + rand()%(COLUMNS - 3);
+        }while(terrain[r][c] == '.' || terrain[r][c] == '#' || terrain[r][c] == ':' || terrain[r][c] == '~');
+        terrain[r][c] = '.';
+        queue_enqueue(&q, r * COLUMNS + c);
+    }
+    
+    int u,t;
+    int tmp_r, tmp_c;
+
+    while(!queue_is_empty(&q)){
+        queue_dequeue(&q, &u);
+        
+        r = u / COLUMNS;
+        c = u % COLUMNS;
+
+        for(i = 0; i < 4; i++){
+            tmp_r = r + offset_r[i];
+            tmp_c = c + offset_c[i];
+
+            if(terrain[tmp_r][tmp_c] == '#' || terrain[tmp_r][tmp_c] == '%') continue;
+
+            if(terrain[tmp_r][tmp_c] == ','){
+                terrain[tmp_r][tmp_c] = terrain[r][c];
+                queue_enqueue(&q, tmp_r * COLUMNS + tmp_c);
+            }else{
+                t = rand()%353;
+                if(t == 0){
+                    terrain[tmp_r][tmp_c] = '%';
+                }else if(t == 1){
+                    terrain[tmp_r][tmp_c] = '^';
+                }else if(t == 2){
+                    terrain[tmp_r][tmp_c] = '.';
+                }else if(t == 3){
+                    terrain[tmp_r][tmp_c] = '~';
+                }else if(t == 4){
+                    terrain[tmp_r][tmp_c] = ':';
+                }
+            }
+        }
+    }
+
+    for(r = 0; r < ROWS; r++){
+        for(c = 0; c < COLUMNS; c++){
+            if(terrain[r][c] == ','){
+                t = rand()%163;
+                if(t < 90){
+                    terrain[r][c] = '.';
+                }
+                else{
+                    terrain[r][c] = ':';
+                }
+            }
+        }
+    }
+
+    bool pokeC = false, pokeM = false,find = false;
+
+    int x,y,tr,tc;
+
+    do{
+        r = 1 + rand()%18;
+
+        find = false;
+        
+        for(c = 1; c < COLUMNS - 3 && !find; c++){
+            if(terrain[r][c] == '#' || terrain[r+1][c] == '#' || terrain[r][c+1] == '#' || terrain[r+1][c+1] == '#') continue;
+            if(terrain[r][c] == 'M' || terrain[r+1][c] == 'M' || terrain[r][c+1] == 'M' || terrain[r+1][c+1] == 'M') continue;
+            if(terrain[r][c] == 'C' || terrain[r+1][c] == 'C' || terrain[r][c+1] == 'C' || terrain[r+1][c+1] == 'C') continue;
+            for(x = 0; x < 2 && !find; x++){
+                for(y = 0; y < 2 && !find; y++){
+                    for(i = 0; i < 4 && !find ; i++){
+                        tr = r + x + offset_r[i];
+                        tc = c + y + offset_c[i];
+
+                        if(terrain[tr][tc] == '#'){
+                            find = true;
+                        }
+                    }
+                }
+            }
+            if(find) break;
+        }
+
+        if(find){
+            if(!pokeC){
+                pokeC = true;
+                terrain[r][c] = terrain[r+1][c] = terrain[r][c+1] = terrain[r+1][c+1] = 'C';
+            }else{
+                pokeM = true;
+                terrain[r][c] = terrain[r+1][c] = terrain[r][c+1] = terrain[r+1][c+1] = 'M'; 
+            }
+        }
+
+    }while(!pokeC || !pokeM);
+}
 
 void init(){
     int i,j;
@@ -142,9 +308,6 @@ void init(){
 
     terrain[west_exit][0] = terrain[east_exit][COLUMNS-2] = terrain[0][north_exit] = terrain[ROWS-1][south_exit] = '#';
 
-//    cross_r = min(4 + rand()%ROWS, ROWS - 4);
-//    cross_c = min(4 + rand()%COLUMNS, COLUMNS - 5);
-
     int t = rand()%4;
 
     if(t == 0){ //west
@@ -167,13 +330,11 @@ void init(){
     
     for(i = 1; i < ROWS-1; i++){
         for(j = 1; j < COLUMNS-2; j++){
-            if(terrain[i][j] == '0' || terrain[i][j] == '1') terrain[i][j] = ':';
+            if(terrain[i][j] == '0' || terrain[i][j] == '1') terrain[i][j] = ',';
         }
     }
     terrain[cross_r][cross_c] = '#';
 }
-
-
 
 int main(int argc, char * argv[]){
 
@@ -181,10 +342,37 @@ int main(int argc, char * argv[]){
 
     init();
 
-    int i;
+    elements();
+
+    int i,j;
   
     for(i = 0; i < ROWS; i++){
-        printf("%s\n",terrain[i]);
+        for(j = 0; j < COLUMNS - 1; j++){
+            switch(terrain[i][j]){
+                case '%':
+                    yellow(); 
+                    break;
+                case '#':
+                    white();
+                    break;
+                case ':':
+                    purple();
+                    break;
+                case '.':
+                    green();
+                    break;
+                case '^':
+                    green();
+                    break;
+                case '~':
+                    blue();
+                    break;
+                default:
+                    reset();
+            }
+            printf("%c",terrain[i][j]);
+        }
+        printf("\n");
     }
     return 0;
 }
