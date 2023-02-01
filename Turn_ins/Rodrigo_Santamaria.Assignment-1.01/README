@@ -1,0 +1,51 @@
+Project's explanation:
+
+I used the data structure queue and modified it to push a node from the front two like a 'dequeue' in C++.
+I defined the queue in 'queue.h' and work its functions in 'queue.c'. The main function is in 'main.c'.
+
+Makefile explanation:
+
+I learned and implement a template to compile with multiple source files.
+
+make (all): compile everything
+make main.o: compile for main.c
+make queue.o: compile for queue.c
+make clean: remove the binaries and object files
+
+The binaries are in PokemonGame!
+
+Algorithm's explanation:
+
+First I call the function 'init()':
+
+init(): 
+        Place the borders '%', and generate the 4 exits randomly, then
+        put a random value 0 or 1 in each of the inner cells and continue to a call of 'paths_generation()'
+
+    paths_generation(): 
+                Run a 0-1 BFS (https://cp-algorithms.com/graph/01_bfs.html) from one of the 4 exits (randomly chosen) to all the other reachable cell, 
+                this will give us a shortest path to the other 3 exits and we will use those as our paths.
+                We get that path by calling the function 'search_ancestor(int r,int c)' for each of the exits.
+
+                    search_ancestor(int r,int c):
+                            tracks all the ancestor since the exit x to the initial exit, at the same time replace the position by '#'
+                            in the matrix.
+
+We move to the function 'elements()':
+
+elements():
+
+        Then, we set all the non-'#' and non-'%' cells to ',', we add the *intentional* seeds randomly,
+    
+            there will be between 1 and 4 regions of water
+            '                   ' 2 and 4 regions of tall grass
+            '                   ' 2 and 4 regions of short grass
+
+        We grow the seeds until they touch each other and at the same time, there is 5/353 chances to change that shared cell
+        to '%', '^', '.', '~', or ':'.
+
+        All the regions that were not covered by the previous algorithm can be (with a chance of 90/163) '.' or (73/163) ':'.
+
+        Then we ry to place the PokemonCenter and PokemonMarket in a available 2x2 cell near a path cell.
+
+Finally we print our terrain and add color in the 'print_terrain()' function.
