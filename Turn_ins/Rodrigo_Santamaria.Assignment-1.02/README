@@ -1,0 +1,21 @@
+Project's explanation:
+
+'tlib' is the name of the library I created with the functions I used in all my programs
+'map' contains the previous code for each terrain, map_t now is my struct when I save
+    the terrain and exits.
+'queue' contains the struct for a dequeue
+'main' contains the execution of game
+
+Makefile:
+
+Is the same makefile for the previous assignment, it works for every .c with any dependencies,
+which means that the command 'make' build everything, and 'make [file_name]' builds the file,
+it also contains the 'clean' function.
+
+Algorithm's explanation:
+
+I added flags to know when to keep an existing exit from a neighbours. I also created an 
+map's pointer matrix of 401X401 and (200,200) is the internal origin. I clean the terminal
+for each movement and provide an small feedback to the user. The probability of CC, and MM 
+is set to randomly but each 50 maps it the decrease by 10%, so it would be easy to test, and 
+later I can set different difficulty levels.

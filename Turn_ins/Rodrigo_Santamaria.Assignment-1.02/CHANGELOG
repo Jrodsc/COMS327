@@ -1,0 +1,99 @@
+commit 4c0f61d8f715548b09d930e9f39164fbccb7ee0b
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Feb 8 21:21:20 2023 -0600
+
+    Assignment 1.02 Completed
+
+commit ffc0b436d2a815646f11f50164fca6643cef0a4c
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 6 22:45:03 2023 -0600
+
+    Removing .swp :p
+
+commit f6767caecf592b5f3dcfd9f8f367e08635c21c57
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 6 22:44:00 2023 -0600
+
+    Assignment1.02 created. Struct map, and library tlib created to keep it clean!
+
+commit 7631c7638bf23194f48ed2dcab23716724053202
+Merge: bca57e7 426c865
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 6 20:26:10 2023 -0600
+
+    Merge branch 'main' of https://github.com/jrodscisu/COMS_227 into main
+
+commit bca57e75c609e846d57292e554cdc3886a33f8dc
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 6 19:40:24 2023 -0600
+
+    Assignment 1.01 turned in
+
+commit ab8e22c92986893f0f7cf50493a1397987bf40ff
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Jan 31 23:11:47 2023 -0600
+
+    Assignment1.01 completed
+
+commit f77d741f73a055049622e2131e6f31613eb1e83c
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Jan 31 19:21:58 2023 -0600
+
+    Lecture 5 added
+
+commit 1f27eb56894fda0f48f718e971cb9fb8e22591a0
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Jan 30 00:52:23 2023 -0600
+
+    Assignment1.01 Completed
+
+commit bcbc9d6811bb8e9f39176ebfa63ba4e0fc948b96
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Sun Jan 29 20:22:39 2023 -0600
+
+    Fixing the path with no return bug
+
+commit af6147f80dc5045376e687f36dd4d0e8db534634
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Sun Jan 29 17:05:44 2023 -0600
+
+    Path_generation added, looking good!
+
+commit 426c8655f7b9808ca04cf8fc45e078eeed9f58bf
+Merge: 9001091 db46bad
+Author: jrodscisu <123523265+jrodscisu@users.noreply.github.com>
+Date:   Sat Jan 28 16:33:42 2023 -0600
+
+    Merge pull request #1 from jrodscisu/Assignment1.01
+    
+    Added exits and cross point
+
+commit db46bad5f41feeff12c82dcef937782a3f5ecb60
+Author: jrodscisu <123523265+jrodscisu@users.noreply.github.com>
+Date:   Sat Jan 28 16:32:02 2023 -0600
+
+    Added exits and cross point
+
+commit 9001091590947878964246479926d06d39bfddf7
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Sat Jan 28 14:38:02 2023 -0600
+
+    Starting Assignment1.01
+
+commit fe2e01cd5676bc76107cfd473b104859fd9b814a
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Thu Jan 26 00:58:53 2023 -0600
+
+    Assignment0 turned in
+
+commit 6efe07d77b3947a9596dda7921119685654c9f31
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Jan 24 23:23:43 2023 -0600
+
+    Adding feature: printing board
+
+commit 0a0013675a983e58cace1568b14bc6eaf036e811
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Jan 24 20:24:46 2023 -0600
+
+    Starting the repo
