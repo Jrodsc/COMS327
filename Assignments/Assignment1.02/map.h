@@ -14,10 +14,11 @@ typedef struct map{
 } map_t;
 //Process functions
 
-void paths_generation(map_t * m);
-void elements(map_t * m);
-void init(map_t * m);
-void print_terrain(map_t * m);
-
+void map_paths_generation(map_t * m);
+void map_elements(map_t * m);
+void map_init(map_t * m);
+void map_print_terrain(map_t * m);
+void map_set_exits(map_t * m, char c, int val);
+void map_set(map_t * m);
 
 #endif

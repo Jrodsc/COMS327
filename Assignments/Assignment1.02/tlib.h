@@ -6,7 +6,8 @@
 
 int min(int  a, int  b);
 int max(int a, int b);
-//color functions
+
+//Color functions
 
 void red();
 void black();

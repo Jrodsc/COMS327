@@ -11,8 +11,10 @@ queue_t q;
 
 int offset_r[4] = {0, 1, 0, -1};
 int offset_c[4] = {1, 0, -1 , 0};
+int dw = 0,de = 0,dn = 0,ds = 0;
 
-void paths_generation(map_t * m){
+
+void map_paths_generation(map_t * m){
 
     int ancestor[ROWS][COLUMNS];
     int dist[ROWS][COLUMNS];
@@ -62,10 +64,10 @@ void paths_generation(map_t * m){
     }
 
 
-    queue_enqueue(&q, m -> w_exit * COLUMNS);
-    queue_enqueue(&q, m -> e_exit * COLUMNS + COLUMNS - 2);
-    queue_enqueue(&q, m -> n_exit);
-    queue_enqueue(&q, COLUMNS * (ROWS - 1) + m -> s_exit);
+    queue_enqueue(&q, m -> w_exit * COLUMNS + dw);
+    queue_enqueue(&q, m -> e_exit * COLUMNS + COLUMNS - 2 + de);
+    queue_enqueue(&q, m -> n_exit + dn * COLUMNS);
+    queue_enqueue(&q, COLUMNS * (ROWS - 1 + ds) + m -> s_exit);
 
     while(!queue_is_empty(&q)){
         queue_dequeue(&q, &u);
@@ -87,7 +89,7 @@ void paths_generation(map_t * m){
     
 }
 
-void elements(map_t * m){
+void map_elements(map_t * m){
     int rgn_water = 1 + rand()%4;
     int rgn_tllg  = 2 + rand()%3;
     int rgn_shg   = 2 + rand()%3;
@@ -217,7 +219,7 @@ void elements(map_t * m){
     queue_destroy(&q);
 }
 
-void init(map_t * m){
+void map_init(map_t * m){
     int i,j;
 
     for(i = 0; i < ROWS; i++){
@@ -231,11 +233,17 @@ void init(map_t * m){
     for(i = 0; i < ROWS; i++){
         m -> terr[i][0] = m -> terr[i][COLUMNS-2] = '%';
     }
+    dw = de = dn = ds = 0;
 
-    m -> w_exit = min(4 + rand()%ROWS, ROWS - 4);
-    m -> e_exit = min(4 + rand()%ROWS, ROWS - 4);
-    m -> n_exit = min(4 + rand()%COLUMNS, COLUMNS - 5);
-    m -> s_exit = min(4 + rand()%COLUMNS, COLUMNS - 5);
+    if(m -> w_exit == -1) m -> w_exit = min(4 + rand()%ROWS, ROWS - 4);
+    if(m -> e_exit == -1) m -> e_exit = min(4 + rand()%ROWS, ROWS - 4);
+    if(m -> n_exit == -1) m -> n_exit = min(4 + rand()%COLUMNS, COLUMNS - 5);
+    if(m -> s_exit == -1) m -> s_exit = min(4 + rand()%COLUMNS, COLUMNS - 5);
+
+    if(m -> w_exit == -2) m -> w_exit = m -> e_exit, dw = COLUMNS - 2;
+    if(m -> e_exit == -2) m -> e_exit = m -> w_exit, de = 2 - COLUMNS;
+    if(m -> n_exit == -2) m -> n_exit = m -> s_exit, dn = ROWS - 1;
+    if(m -> s_exit == -2) m -> s_exit = m -> n_exit, ds = 1 - ROWS; 
 
     for(i = 1; i < ROWS-1; i++){
         for(j = 1; j < COLUMNS-2; j++){
@@ -243,27 +251,27 @@ void init(map_t * m){
         }
     }
 
-    m -> terr[m -> w_exit][0] = m -> terr[m -> e_exit][COLUMNS-2] = m -> terr[0][m -> n_exit] = m -> terr[ROWS-1][m -> s_exit] = '#';
+    m -> terr[m -> w_exit][0 + dw] = m -> terr[m -> e_exit][COLUMNS-2 + de] = m -> terr[0 + dn][m -> n_exit] = m -> terr[ROWS-1 + ds][m -> s_exit] = '#';
 
     int t = rand()%4;
 
     if(t == 0){ 
         m -> cross_r = m -> w_exit;
-        m -> cross_c = 0;
+        m -> cross_c = 0 + dw;
     }else if(t == 1){ 
         m -> cross_r = m -> e_exit;
-        m -> cross_c = COLUMNS-2;
+        m -> cross_c = COLUMNS-2 + de;
     }else if(t == 2){ 
-        m -> cross_r = 0;
+        m -> cross_r = 0 + dn;
         m -> cross_c = m -> n_exit;
     }else{
-        m -> cross_r = ROWS - 1;
+        m -> cross_r = ROWS - 1 + ds;
         m -> cross_c = m -> s_exit;
     }
 
     m -> terr[m -> cross_r][m -> cross_c] = 'X';
     
-    paths_generation(m);
+    map_paths_generation(m);
     
     for(i = 1; i < ROWS-1; i++){
         for(j = 1; j < COLUMNS-2; j++){
@@ -273,9 +281,10 @@ void init(map_t * m){
     m -> terr[m -> cross_r][m -> cross_c] = '#';
 }
 
-void print_terrain(map_t * m){
+void map_print_terrain(map_t * m){
 
     int i,j;
+    system("clear");
   
     for(i = 0; i < ROWS; i++){
         for(j = 0; j < COLUMNS - 1; j++){
@@ -311,5 +320,32 @@ void print_terrain(map_t * m){
         }
         printf("\n");
     }
+    reset();
 }
 
+void map_set_exits(map_t * m, char c, int val){
+    switch(c){
+        case 'n':
+            m -> n_exit = val;
+            break;
+        case 's':
+            m -> s_exit = val;
+            break;
+        case 'w':
+            m -> w_exit = val;
+            break;
+        case 'e':
+            m -> e_exit = val;
+            break;
+        case 'a':
+            m -> n_exit = m -> s_exit = m -> e_exit = m -> w_exit = val;
+            break;
+        //default:
+            //fprintf(stderr,"Error, valid direction");
+    }
+}
+
+void map_set(map_t * m){
+    map_init(m);
+    map_elements(m);
+}
