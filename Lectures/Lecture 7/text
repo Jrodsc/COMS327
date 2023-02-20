@@ -1,0 +1,15 @@
+char * s = "Hello world!";  -> String literal - s points a string literal
+char a[] = "Hello world!";  -> string literals are mapped the text segment, which read only.
+
+s[0] = 'h'; // instant crash, attempt to modify r/o data
+a[0] = 'h'; // okay
+
+s = a;
+s[6] = 'w'; // okay, s aliases a, which is r/w;
+
+s = a + 11;
+*s = '.' // now a is "hello world."
+
+// A string in C is an Array of characters that end by a NULL byte ('\0', value 0)
+
+

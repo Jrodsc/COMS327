@@ -14,6 +14,24 @@ int offset_c[4] = {1, 0, -1 , 0};
 int dw = 0,de = 0,dn = 0,ds = 0;
 int distance;
 
+void get_rand_pos(map_t * m, char cx){
+    bool flag = false;
+    int r;
+    do{
+        r = 1 + rand()%19;
+
+        for(int c = 1; c < COLUMNS - 3 && !flag; c++){
+            if(m -> terr[r][c] == cx){
+                m -> rand_pos.r = r;
+                m -> rand_pos.c = c;
+                flag = true;
+            }
+        }
+    }while(!flag);
+
+    m -> terr[m -> rand_pos.r][m -> rand_pos.c] = '@';
+}
+
 void map_paths_generation(map_t * m){
 
     int ancestor[ROWS][COLUMNS];
@@ -354,4 +372,6 @@ void map_set(map_t * m,int a,int b){
     m -> ry = b;
     map_init(m);
     map_elements(m);
+    get_rand_pos(m, '#');
+
 }

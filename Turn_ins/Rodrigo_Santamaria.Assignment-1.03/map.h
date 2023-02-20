@@ -12,6 +12,7 @@ typedef struct map{
     char terr[ROWS][COLUMNS];
     int rx, ry;
     int w_exit, e_exit, n_exit, s_exit, cross_r, cross_c;
+    pos_t rand_pos;
 } map_t;
 //Process functions
 
@@ -21,5 +22,6 @@ void map_init(map_t * m);
 void map_print_terrain(map_t * m);
 void map_set_exits(map_t * m, char c, int val);
 void map_set(map_t * m,int a,int b);
+void get_rand_pos(map_t * m, char c);
 
 #endif
