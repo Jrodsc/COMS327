@@ -1,0 +1,18 @@
+Project explanation:
+I add the files priority_queue.c and .h to in which I created a randomized heap, I chose it because
+it was very easy to code and it is also O(logn)
+
+Makefile:
+It is the same makefile from the last assignment
+
+'make' will build everything and,
+'make [file_name.o]' will build the specific file
+
+'make clean' remove the binaries and object files.
+
+Algorithm:
+The randomized heap is a heap that provides all the operations in O(logn) and uses the concept of a
+binary_tree, so you only need a function merge to everything. This function is randomized in order to
+reduce the probability of doing many recursive steps.
+
+Then I used dijkstra to get the SSSP from the PC to every cell considering the type of the non-PC.
