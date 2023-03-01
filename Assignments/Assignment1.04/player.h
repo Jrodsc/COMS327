@@ -10,9 +10,8 @@
 #define SWIMMER 64
 
 typedef struct trainer{
-    char type;
-    int r,c;
-    char txt;
+    char type, r, c, txt;
+    char last_move;
 }trainer_t;
 
 int trainer_init(trainer_t * t, char type, int r, int c, char txt);

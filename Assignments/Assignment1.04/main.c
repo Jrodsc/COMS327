@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -35,6 +36,7 @@ int main(int argc, char * argv[]){
 
     map_set_exits(universe.world[200][200],'a',-1);
     map_set(universe.world[200][200], 0,0); 
+    set_trnrs_map(&universe, universe.world[200][200]);
 
     int nx,ny, x = 0,y = 0,curr_x = 200, curr_y = 200;
     char lc = 'z',c = 'z';
@@ -44,8 +46,22 @@ int main(int argc, char * argv[]){
     while(true){
         map_print_terrain(universe.world[curr_y][curr_x]);
         
-        dijkstra(universe.world[curr_y][curr_x], HIKER);
-        dijkstra(universe.world[curr_y][curr_x], RIVAL);
+        usleep(250000);
+        dijkstra(universe.world[curr_y][curr_x], PC, universe.cost_pc);
+        dijkstra(universe.world[curr_y][curr_x], RIVAL, universe.cost_rival);
+        dijkstra(universe.world[curr_y][curr_x], HIKER, universe.cost_hiker);
+
+        /*
+        for(i = 0; i < ROWS; i++){
+            for(j = 0; j < 20; j++){
+                printf("%llu\t", universe.cost_rival[i][j]);
+            }
+            printf("\n");
+        }
+
+        */
+
+        update_trnrs_map(&universe, universe.world[curr_y][curr_x]);
 
         switch(lc){
             case 'n':
@@ -92,8 +108,8 @@ int main(int argc, char * argv[]){
         }
         printf("Current coordinate: <%d, %d>", x,y);
         printf("\nIngrese un comando: ");
+        //scanf("%c", &c);
         fflush(stdout);
-        scanf("%c", &c);
 
         if(c == 'n' || c == 's' || c == 'w' || c == 'e' || c == 'f') lc = c;
 

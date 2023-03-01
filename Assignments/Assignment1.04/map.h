@@ -23,10 +23,9 @@ typedef struct map{
 void map_paths_generation(map_t * m);
 void map_elements(map_t * m);
 void map_init(map_t * m);
-void map_print_terrain(map_t * m);
 void map_set_exits(map_t * m, char c, int val);
 void map_set(map_t * m,int a,int b);
 pos_t get_rand_pos(map_t * m, char c);
-void dijkstra(map_t * m, int t);
+void dijkstra(map_t * m, int t,unsigned long long int dist[ROWS][COLUMNS]);
 
 #endif

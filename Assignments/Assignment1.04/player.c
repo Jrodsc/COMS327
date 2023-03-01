@@ -3,9 +3,9 @@
 #include "player.h"
 
 int trainer_init(trainer_t * t, char type, int r, int c,char txt){
-    if(!(t = malloc(sizeof(t)))){
-        return 1;
-    }
+   // if(!(t = malloc(sizeof(t)))){
+   //     return 1;
+   // }
     
     t -> type = type;
     t -> r = r;

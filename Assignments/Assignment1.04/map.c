@@ -11,23 +11,35 @@
 
 queue_t q;
 
-int offset_r[8] = {0, 1, 0, -1, -1, -1, 1, 1};
-int offset_c[8] = {1, 0, -1, 0, -1, 1, 1, -1};
 int dw = 0,de = 0,dn = 0,ds = 0;
 int distance;
 
+int offset_r[8] = {0, 0, 1, -1, -1, 1, -1, 1};
+int offset_c[8] = {1, -1, 0, 0, -1, 1, 1, -1};
 int cost[3][9] = {
     {10, 10, 10, 20, 10, INF, INF, INF, 10},
     {10, 50, 50, 15, 10, 15, 15, INF, INF},
     {10, 50, 50, 20, 10, INF, INF, INF,INF}
 };
 
+//Compare functions
+
+static int cmp_trnr_pos(const void *p1, const void *p2){
+    trainer_t p1_t = *(trainer_t *)p1;
+    trainer_t p2_t = *(trainer_t *)p2;
+
+    if(p1_t.r == p2_t.r){
+        return (int)!(p1_t.c < p2_t.c);
+    }
+
+    return (int)!(p1_t.r < p2_t.r);
+}
+
 //Bldr Tree Path PMart PCntr TGras SGras Mtn Forest Water Gate
 
 char terr_type[11] = {'%', '^', '#', 'M', 'C', ':', '.', '%', '^', '~', '#'};
 
-void dijkstra(map_t * m, int t){
-    unsigned long long int dist[ROWS][COLUMNS - 1];
+void dijkstra(map_t * m, int t, unsigned long long int dist[ROWS][COLUMNS]){
     int r,c;
     for(r = 0; r < ROWS; r++){
         for(c = 0; c < COLUMNS-1; c++){
@@ -110,11 +122,14 @@ void dijkstra(map_t * m, int t){
             }
         }
     }
-   
+    
+    /* 
     int ten,uni;
 
     for(r = 0; r < ROWS; r++){
         for(c = 0; c < COLUMNS - 1; c++){
+            printf("%llu\t", dist[r][c]);
+            continue;
             if(dist[r][c] == INF)
                 printf("   ");
             else{
@@ -125,7 +140,8 @@ void dijkstra(map_t * m, int t){
         }
         printf("\n");
     }
-
+    */
+    
 }
 
 pos_t get_rand_pos(map_t * m, char cx){
@@ -133,7 +149,7 @@ pos_t get_rand_pos(map_t * m, char cx){
     pos_t t;
     int r,c;    
     do{
-        r = 1 + rand()%19;
+        r = 1 + rand()%(ROWS - 2);
         c = 1 + rand()%(COLUMNS-3);
 
         if(m -> terr[r][c] == cx){
@@ -418,62 +434,6 @@ void map_init(map_t * m){
     m -> terr[m -> cross_r][m -> cross_c] = '#';
 }
 
-void map_print_terrain(map_t * m){
-
-    int i,j,k;
-    system("clear");
-
-    bool isPlayer;
-  
-    for(i = 0; i < ROWS; i++){
-        for(j = 0; j < COLUMNS - 1; j++){
-            isPlayer = false;
-            for(k = 0; k < m -> n_trnrs; k++){
-                if(i == m -> arr_trnr[k].r && j == m -> arr_trnr[k].c){
-                    reset();
-                    isPlayer = true;
-                    break;
-                }
-            }
-            if(isPlayer){
-                printf("%c", m -> arr_trnr[k].txt);
-                continue;
-            }
-
-            switch(m -> terr[i][j]){
-                case '%':
-                    yellow(); 
-                    break;
-                case '#':
-                    white();
-                    break;
-                case ':':
-                    purple();
-                    break;
-                case '.':
-                    green();
-                    break;
-                case '^':
-                    green();
-                    break;
-                case '~':
-                    cyan();
-                    break;
-                case 'M':
-                    blue();
-                    break;
-                case 'C':
-                    red();
-                    break;
-                default:
-                    reset();
-            }
-            printf("%c",m -> terr[i][j]);
-        }
-        printf("\n");
-    }
-    reset();
-}
 
 void map_set_exits(map_t * m, char c, int val){
     switch(c){
@@ -501,37 +461,47 @@ void set_trainers(map_t * m){
     m -> n_trnrs = 1 + rand()%MAX_TRAINERS;
 
     int type = 1,n_tmp = m -> n_trnrs, t, i, j = 0;
+    char cx;
     pos_t pos;
 
-    while(n_tmp){ 
-        t = (int)(type < 2) + rand()%(n_tmp + 1);
+    while(n_tmp > 0){ 
+        t = (int)(type <= 2) + rand()%(n_tmp + 1);
+        if(t > n_tmp) t = n_tmp;
+        if(t == n_tmp && type == 1 && t > 1) t >>= 1;
         n_tmp -= t;
-        while(t--){
+        while(t-- > 0){
             while(true){
-                
                 switch(type){
                     case HIKER:
+                        cx = 'h';
                         pos = get_rand_pos(m, terr_type[2 + rand()%7]); 
                         break;
                     case RIVAL:
+                        cx = 'r';
                         pos = get_rand_pos(m, terr_type[2 + rand()%5]); 
                         break;
                     case PACER:
+                        cx = 'p';
                         pos = get_rand_pos(m, terr_type[2 + rand()%5]); 
                         break;
                     case WANDERER:
+                        cx = 'w';
                         pos = get_rand_pos(m, terr_type[2 + rand()%5]); 
                         break;
                     case SENTRIE:
+                        cx = 's';
                         pos = get_rand_pos(m, terr_type[2 + rand()%5]); 
                         break;
                     case EXPLORER:
+                        cx = 'e';
                         pos = get_rand_pos(m, terr_type[2 + rand()%5]); 
                         break;
                     case SWIMMER:
+                        cx = 'm';
                         pos = get_rand_pos(m, terr_type[9]); 
                         break;
                     default:
+                        cx = 'h';
                         type = 1;
                 }
                 
@@ -544,17 +514,21 @@ void set_trainers(map_t * m){
                 j++;
                 break;
             }
-            trainer_init(&m -> arr_trnr[j - 1], type, pos.r, pos.c, 'r');
+            trainer_init(&m -> arr_trnr[j - 1], type, pos.r, pos.c, cx);
+            m -> arr_trnr[j - 1].last_move = 0;
         }
         type <<= 1;
     }
+
+    qsort(&m -> arr_trnr, m -> n_trnrs, sizeof(trainer_t), cmp_trnr_pos);
 }
+
 void map_set(map_t * m,int a,int b){
     m -> rx = a;
     m -> ry = b;
     map_init(m);
     map_elements(m);
-    pos_t t = get_rand_pos(m, ' ');
+    pos_t t = get_rand_pos(m, '#');
 
     m -> rand_pos = t;
     m -> terr[m -> rand_pos.r][m -> rand_pos.c] = '@';
