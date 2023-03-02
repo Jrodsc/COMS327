@@ -14,6 +14,11 @@ typedef struct trainer{
     char last_move;
 }trainer_t;
 
-int trainer_init(trainer_t * t, char type, int r, int c, char txt);
+typedef struct pc{
+    char r,c, txt;
+    char last_move;
+}pc_t;
 
+int trainer_init(trainer_t * t, char type, int r, int c, char txt, char last_move);
+int pc_init(pc_t * t, int r,int c, char txt, char last_move);
 #endif 

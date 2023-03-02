@@ -1,7 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#define MAX_TRAINERS 10
+#define MAX_TRAINERS 15
 #define INF 1000000000
 #define ROWS 21
 #define COLUMNS 81 
@@ -26,6 +26,6 @@ void map_init(map_t * m);
 void map_set_exits(map_t * m, char c, int val);
 void map_set(map_t * m,int a,int b);
 pos_t get_rand_pos(map_t * m, char c);
-void dijkstra(map_t * m, int t,unsigned long long int dist[ROWS][COLUMNS]);
+void dijkstra(int rp,int cp,map_t * m, int t,unsigned long long int dist[ROWS][COLUMNS]);
 
 #endif

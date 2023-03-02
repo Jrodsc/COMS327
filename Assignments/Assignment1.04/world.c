@@ -10,18 +10,17 @@
 int offsett_r[8] = {0, 0, 1, -1, -1, 1, -1, 1};
 int offsett_c[8] = {1, -1, 0, 0, -1, 1, 1, -1};
 
-void map_print_terrain(map_t * m){
+void map_print_terrain(world_t * w_t, map_t * m){
 
-    int i,j,k = 0;
+    int i,j;
     system("clear");
-    
 
     for(i = 0; i < ROWS; i++){
         for(j = 0; j < COLUMNS - 1; j++){
-            if(k < m -> n_trnrs && m -> arr_trnr[k].r == i && m -> arr_trnr[k].c == j){
+            
+            if(w_t -> trainers[i][j] != 0) {
                 reset();
-                printf("%c", m -> arr_trnr[k].txt);
-                k++;
+                printf("%c", w_t -> trainers[i][j]);
                 continue;
             }
 
@@ -78,10 +77,24 @@ int set_trnrs_map(world_t * w_t, map_t * m){
 }
 
 int update_trnrs_map(world_t * w_t, map_t * m){
-    int i,j,rt,ct,r,c;
+    int i,j,rt,ct,r,c,isposs;
     unsigned long long int mini;
 
-    char next_move;
+    char next_move = rand()%8;
+
+    r = w_t -> pc.r;
+    c = w_t -> pc.c;
+
+    rt = r + offsett_r[(int)next_move];
+    ct = c + offsett_c[(int)next_move];
+
+    if(!OUT_OF_TERR_LIMITS(rt,ct) && w_t -> trainers[rt][ct] == 0){
+        w_t -> trainers[r][c] = 0;
+        w_t -> pc.r = rt;
+        w_t -> pc.c = ct;
+        w_t -> pc.last_move = next_move;
+        w_t -> trainers[rt][ct] = '@';
+    }
 
     for(i = 0; i < m -> n_trnrs; i++){
         printf("%d\n", m -> arr_trnr[i].type);
@@ -89,23 +102,27 @@ int update_trnrs_map(world_t * w_t, map_t * m){
         rt = r = (int) m -> arr_trnr[i].r;
         ct = c = (int) m -> arr_trnr[i].c;
         next_move = m -> arr_trnr[i].last_move;
+        isposs = 0;
         switch((int)m -> arr_trnr[i].type){
             case HIKER: 
                 for(j = 0; j < 8; j++){
                     rt = r + offsett_r[j];
                     ct = c + offsett_c[j];
 
-                    if(w_t -> cost_hiker[rt][ct] < mini && !w_t -> trainers[rt][ct]){
+                    if(w_t -> cost_hiker[rt][ct] < mini && w_t -> trainers[rt][ct] == 0){
                         mini = w_t -> cost_hiker[rt][ct];
                         next_move = (char)j;
+                        isposs = 1;
                     }
-                    printf("%llu ", mini);
                 }
-                printf("\n");
 
-                rt = r + offsett_r[(int)next_move];
-                ct = c + offsett_c[(int)next_move];
-
+                if(isposs){
+                    rt = r + offsett_r[(int)next_move];
+                    ct = c + offsett_c[(int)next_move];
+                }else{
+                    rt = r;
+                    ct = c;
+                }
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt; 
                 m -> arr_trnr[i].c = ct;
@@ -117,25 +134,31 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                     rt = r + offsett_r[j];
                     ct = c + offsett_c[j];
 
-                    if(w_t -> cost_rival[rt][ct] < mini && !w_t -> trainers[rt][ct]){
+                    if(w_t -> cost_rival[rt][ct] < mini && w_t -> trainers[rt][ct] == 0){
                         mini = w_t -> cost_rival[rt][ct];
                         next_move = (char)j;
+                        isposs = 1;
                     }
                 }
                 
-                rt = r + offsett_r[(int)next_move];
-                ct = c + offsett_c[(int)next_move];
+                if(isposs){
+                    rt = r + offsett_r[(int)next_move];
+                    ct = c + offsett_c[(int)next_move];
+                }else{
+                    rt = r;
+                    ct = c;
+                }
 
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt;
                 m -> arr_trnr[i].c = ct;
-                w_t -> trainers[rt][rt] = 'r';
+                w_t -> trainers[rt][ct] = 'r';
                 m -> arr_trnr[i].last_move = next_move;
                 break;
             case PACER:
                 rt = r + offsett_r[(int)next_move];
                 ct = c + offsett_c[(int)next_move];
-                if(OUT_OF_TERR_LIMITS(rt,ct) || w_t -> cost_rival[rt][ct] == INF){
+                if(OUT_OF_TERR_LIMITS(rt,ct) || w_t -> cost_rival[rt][ct] == INF || w_t -> trainers[rt][ct] != 0){
                     rt = r;
                     ct = c;
                     next_move = m -> arr_trnr[i].last_move ^ 1; 
@@ -149,7 +172,7 @@ int update_trnrs_map(world_t * w_t, map_t * m){
             case WANDERER:
                 rt = r + offsett_r[(int)next_move];
                 ct = c + offsett_c[(int)next_move];
-                if(OUT_OF_TERR_LIMITS(rt,ct) || m -> terr[rt][ct] != m -> terr[r][c]){
+                if(OUT_OF_TERR_LIMITS(rt,ct) || m -> terr[rt][ct] != m -> terr[r][c] || w_t -> trainers[rt][ct] != 0){
                     rt = r;
                     ct = c;
                     next_move = (m -> arr_trnr[i].last_move + rand()%8)%8; 
@@ -165,7 +188,7 @@ int update_trnrs_map(world_t * w_t, map_t * m){
             case EXPLORER:
                 rt = r + offsett_r[(int)next_move];
                 ct = c + offsett_c[(int)next_move];
-                if(OUT_OF_TERR_LIMITS(rt,ct)){
+                if(OUT_OF_TERR_LIMITS(rt,ct) || w_t -> trainers[rt][ct] != 0){
                     rt = r;
                     ct = c;
                     next_move = (m -> arr_trnr[i].last_move + rand()%8)%8; 
@@ -177,12 +200,33 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                 m -> arr_trnr[i].last_move = next_move;
                 break;
             case SWIMMER:
-                rt = r + offsett_r[(int)next_move];
-                ct = c + offsett_c[(int)next_move];
-                if(OUT_OF_TERR_LIMITS(rt,ct) || (m -> terr[rt][ct] != m -> terr[r][c] && m -> terr[rt][ct] != '#')){
-                    rt = r;
-                    ct = c;
-                    next_move = (m -> arr_trnr[i].last_move + rand()%8)%8; 
+                if(w_t -> cost_swimmer[r][c] == INF){
+                    rt = r + offsett_r[(int)next_move];
+                    ct = c + offsett_c[(int)next_move];
+                    if(OUT_OF_TERR_LIMITS(rt,ct) || w_t -> trainers[rt][ct] != 0 || m -> terr[rt][ct] != '~'){
+                        rt = r;
+                        ct = c;
+                        next_move = (m -> arr_trnr[i].last_move + rand()%8)%8; 
+                    }
+                }else{
+                    for(j = 0; j < 8; j++){
+                        rt = r + offsett_r[j];
+                        ct = c + offsett_c[j];
+
+                        if(w_t -> cost_swimmer[rt][ct] < mini && w_t -> trainers[rt][ct] == 0 &&  m -> terr[rt][ct] == '~'){
+                            mini = w_t -> cost_swimmer[rt][ct];
+                            next_move = (char)j;
+                            isposs = 1;
+                        }
+                    }
+
+                    if(isposs){
+                        rt = r + offsett_r[(int)next_move];
+                        ct = c + offsett_c[(int)next_move];
+                    }else{
+                        rt = r;
+                        ct = c;
+                    }
                 }
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt;

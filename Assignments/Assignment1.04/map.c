@@ -16,10 +16,11 @@ int distance;
 
 int offset_r[8] = {0, 0, 1, -1, -1, 1, -1, 1};
 int offset_c[8] = {1, -1, 0, 0, -1, 1, 1, -1};
-int cost[3][9] = {
+int cost[4][9] = {
     {10, 10, 10, 20, 10, INF, INF, INF, 10},
     {10, 50, 50, 15, 10, 15, 15, INF, INF},
-    {10, 50, 50, 20, 10, INF, INF, INF,INF}
+    {10, 50, 50, 20, 10, INF, INF, INF,INF},
+    {INF, INF, INF, INF, INF, INF, INF, 7, INF}
 };
 
 //Compare functions
@@ -39,28 +40,39 @@ static int cmp_trnr_pos(const void *p1, const void *p2){
 
 char terr_type[11] = {'%', '^', '#', 'M', 'C', ':', '.', '%', '^', '~', '#'};
 
-void dijkstra(map_t * m, int t, unsigned long long int dist[ROWS][COLUMNS]){
-    int r,c;
+void dijkstra(int rp,int cp,map_t * m, int t, unsigned long long int dist[ROWS][COLUMNS]){
+    int r, c, obj, rt, ct, i,round_water = 0;
+    
+    unsigned long long int state, u, v, d;
+    unsigned long long int * s;
+
+    priority_queue_t pq;
+    priority_queue_init(&pq);
+
     for(r = 0; r < ROWS; r++){
         for(c = 0; c < COLUMNS-1; c++){
             dist[r][c] = INF;
         }
     }
+    
 
-    dist[m -> rand_pos.r][m -> rand_pos.c] = 0;
+    for(i = 0; i < 8; i++){
+        rt = rp + offset_r[i];
+        ct = cp + offset_c[i];
 
-    priority_queue_t pq;
+        if(m -> terr[rt][ct] == '~')
+            round_water++;
+    }
 
-    priority_queue_init(&pq);
+    dist[rp][cp] = INF * (t == SWIMMER && !round_water);
 
-    unsigned long long int * s = malloc(sizeof(*s));
-    *s = m -> rand_pos.r * COLUMNS + m -> rand_pos.c;
-    unsigned long long int state;
+    if(t == SWIMMER) t = 3;
+
+    s = malloc(sizeof(*s));
+    *s = rp * COLUMNS + cp;
     priority_queue_push(&pq, (void *)s);
 
 
-    int obj,i,rt, ct;
-    unsigned long long int u,v,d;
     while(!priority_queue_empty(&pq)){
         s = (unsigned long long int *)priority_queue_top(&pq);
 
@@ -514,8 +526,7 @@ void set_trainers(map_t * m){
                 j++;
                 break;
             }
-            trainer_init(&m -> arr_trnr[j - 1], type, pos.r, pos.c, cx);
-            m -> arr_trnr[j - 1].last_move = 0;
+            trainer_init(&m -> arr_trnr[j - 1], type, pos.r, pos.c, cx, (char)(rand()%8)); 
         }
         type <<= 1;
     }
@@ -531,6 +542,5 @@ void map_set(map_t * m,int a,int b){
     pos_t t = get_rand_pos(m, '#');
 
     m -> rand_pos = t;
-    m -> terr[m -> rand_pos.r][m -> rand_pos.c] = '@';
     set_trainers(m);
 }
