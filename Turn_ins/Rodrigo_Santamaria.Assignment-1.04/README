@@ -1,0 +1,20 @@
+Project's explanation:
+    I added a new c file with the struct for trainers, and pc. Also added the world struct that allow me to have 
+    a map of trainers and only 4 SSSP arrays.
+
+Makefile:
+    It is a generic Makefile:
+
+    'make' will compile everything
+    'make [name_file].o' will compile for name_file only
+    'make clean' deletes the binaries and objects files.
+
+Algorithm:
+    I generate randomly the number of trainers, with a maximum of 15 and I can also change easily the max numbers,
+    then I chose them randomly and place them in random available positions.
+
+    Every turn I update the trainers and pc movements following the instructions from the Assignment.
+
+    For printing I use the char 2d array in my world instruction and the trainers in each map.
+
+
