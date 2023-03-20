@@ -1,5 +1,5 @@
 CC 			= gcc
-CFLAGS 		= -Wall -Werror -ggdb
+CFLAGS 		= -Wall -Werror -ggdb -lncurses
 OBJFILES	= player.o tlib.o priority_queue.o queue.o map.o world.o main.o
 TARGET 		= PokemonGame
 

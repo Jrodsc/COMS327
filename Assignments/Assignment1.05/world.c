@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <ncurses.h>
 #include "tlib.h"
 #include "player.h"
 #include "map.h"
@@ -15,48 +16,61 @@ void map_print_terrain(world_t * w_t, map_t * m){
     int i,j;
     system("clear");
 
+    if(has_colors()){
+        if(start_color() == OK){
+            for(i = 0; i < ROWS; i++){
+                for(j = 0; j < COLUMNS - 1; j++){
+                    
+                    if(w_t -> trainers[i][j] != 0) {
+                        attroff(COLOR_WHITE); 
+                        addch(w_t -> trainers[i][j]);
+                        continue;
+                    }
+                    switch(m -> terr[i][j]){
+                        case '%':
+                            attroff(COLOR_YELLOW); 
+                            break;
+                        case '#':
+                            attroff(COLOR_WHITE); 
+                            break;
+                        case ':':
+                            attroff(COLOR_MAGENTA); 
+                            break;
+                        case '.':
+                            attroff(COLOR_GREEN); 
+                            break;
+                        case '^':
+                            attroff(COLOR_GREEN); 
+                            break;
+                        case '~':
+                            attroff(COLOR_CYAN); 
+                            break;
+                        case 'M':
+                            attroff(COLOR_BLUE); 
+                            break;
+                        case 'C':
+                            attroff(COLOR_RED); 
+                            break;
+                        default:
+                            attroff(COLOR_WHITE); 
+                    }
+                    addch(m -> terr[i][j]);
+                }
+                addch('\n');
+            }
+        }
+    }
+
     for(i = 0; i < ROWS; i++){
         for(j = 0; j < COLUMNS - 1; j++){
             
-            if(w_t -> trainers[i][j] != 0) {
-                reset();
-                printf("%c", w_t -> trainers[i][j]);
-                continue;
-            }
-
-            switch(m -> terr[i][j]){
-                case '%':
-                    yellow(); 
-                    break;
-                case '#':
-                    white();
-                    break;
-                case ':':
-                    purple();
-                    break;
-                case '.':
-                    green();
-                    break;
-                case '^':
-                    green();
-                    break;
-                case '~':
-                    cyan();
-                    break;
-                case 'M':
-                    blue();
-                    break;
-                case 'C':
-                    red();
-                    break;
-                default:
-                    reset();
-            }
-            printf("%c",m -> terr[i][j]);
+            if(w_t -> trainers[i][j] != 0) 
+                addch(w_t -> trainers[i][j]);
+            else
+                addch(m -> terr[i][j]);
         }
-        printf("\n");
+        addch('\n');
     }
-    reset();
 }
 
 int set_trnrs_map(world_t * w_t, map_t * m){
@@ -99,13 +113,17 @@ void pc_rand_move(world_t * w_t, map_t * m){
     w_t -> pc.cell_type = m -> terr[r][c];
 }
 
+int update_pc_map(world_t * w_t, map_t * m, char cx){
+    return 0;
+}
+
 int update_trnrs_map(world_t * w_t, map_t * m){
     int i,j,rt,ct,r,c,isposs;
     unsigned long long int mini;
 
     char next_move;
 
-    pc_rand_move(w_t, m);
+    /*pc_rand_move(w_t, m);*/
 
     for(i = 0; i < m -> n_trnrs; i++){
         printf("%d\n", m -> arr_trnr[i].type);
