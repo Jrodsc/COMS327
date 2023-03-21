@@ -18,7 +18,7 @@
 #include "world.h"
 
 world_t universe;
-int numtrnrs_sw;
+int numtrnrs_sw, curr_x, curr_y;
 
 void notify(char lc, int x, int y, int succs){
     switch(lc){
@@ -66,7 +66,7 @@ void notify(char lc, int x, int y, int succs){
     }
 }
 
-int navigation(int curr_x, int curr_y,int x, int y){
+int navigation(int x, int y){
     char lc,c;
     int nx,ny;
     printf("Current coordinate: <%d, %d>", x,y);
@@ -134,11 +134,115 @@ int navigation(int curr_x, int curr_y,int x, int y){
     return succs;
 }
 
-void game_loop(int curr_x, int curr_y){
+void in_market(){
+    printw("You are inside the Poke Market,\t (Press < to exit)\n");
+    refresh();
+    while(getch() != '<'){
+        move(22,0);
+        printw("Invalid command");
+        refresh();
+        usleep(500000);
+        deleteln();
+    }
+}
+
+void in_center(){
+    printw("You are inside of the Poke Center,\t (Press < to exit)\n");
+    refresh();
+    while(getch() != '<'){
+        move(22,0);
+        printw("Invalid command");
+        refresh();
+        usleep(500000);
+        deleteln();
+    }
+}
+
+void show_list(){
+    int start = 0, selected = 0, i, r, c, rt, ct, vert_loc, hor_loc, move;
+    char type;
+    wchar_t rep = 'a';
+
+    init_pair(1, COLOR_BLACK, COLOR_RED);
+    init_pair(2, COLOR_BLACK, COLOR_WHITE);
+    init_pair(3, COLOR_BLACK, COLOR_BLUE);
+    map_t * m = universe.world[curr_y][curr_x];
+    r = universe.pc.r;
+    c = universe.pc.c;
+
+    move(r,c);
+
+    attron(COLOR_PAIR(3));
+    addch('@');
+    attroff(COLOR_PAIR(3));
+
+    move = 1;
+    move(21,0);
+    printw("Trainers:\n");
+    do{
+        if(move == 1){
+            for(i = 0; i < 3 && start + i < m -> n_trnrs; i++){
+                rt = m -> arr_trnr[start + i].r;
+                ct = m -> arr_trnr[start + i].c;
+                type = m -> arr_trnr[start + i].txt; 
+                vert_loc = r - rt;
+                hor_loc = c - ct;
+                move(21 + i, 12);
+                clrtoeol();
+                if(start + i == selected)
+                    attron(COLOR_PAIR(1));
+                printw("%c, %d %s, %d %s",type, abs(vert_loc), ((vert_loc < 0) ? "south" : "north"), abs(hor_loc), ((hor_loc < 0) ? "west" : "east"));
+                if(start + i == selected)
+                    attroff(COLOR_PAIR(1));
+            }
+        }
+
+        move(m -> arr_trnr[selected].r, m -> arr_trnr[selected].c);
+        
+        attron(COLOR_PAIR(1));
+        addch(m -> arr_trnr[selected].txt);
+        attroff(COLOR_PAIR(1));
+    
+        rep = getch();
+
+        move(m -> arr_trnr[selected].r, m -> arr_trnr[selected].c);
+
+        attron(COLOR_PAIR(2));
+        addch(m -> arr_trnr[selected].txt);
+        attroff(COLOR_PAIR(2));
+
+        if(rep == KEY_UP){
+            if(selected) move = 1;
+            else move = 0;
+            if(selected > 0 && selected < m -> n_trnrs - 1) start = max(0, start - 1);
+            selected = max(0, selected - 1);
+        }else if(rep == KEY_DOWN){
+            if(selected < m -> n_trnrs - 1) move = 1;
+            else move = 0;
+            if(selected > 0 && selected < m -> n_trnrs - 1) start = min(max(m -> n_trnrs - 3,0), start + 1); 
+            selected = min(m -> n_trnrs - 1, selected +1);
+        }
+
+        refresh();
+    }while(rep != 27);
+}
+
+
+void game_loop(){
+    int result;
     char c;
+
     initscr();
-    while(true){
-        map_print_terrain(&universe, universe.world[curr_y][curr_x]);
+    ESCDELAY = 1;
+    curs_set(0);
+    keypad(stdscr, TRUE);
+    resizeterm(ROWS + 3, COLUMNS - 1);
+    noecho();
+    getch();
+
+
+    do{
+        map_print_terrain(&universe, universe.world[curr_y][curr_x],1);
         
         dijkstra((int)universe.pc.r, (int)universe.pc.c,universe.world[curr_y][curr_x], PC, universe.cost_pc);
         if(universe.pc.cell_type != '~'){ 
@@ -149,9 +253,32 @@ void game_loop(int curr_x, int curr_y){
 
         c = getch();
 
-        update_pc_map(&universe, universe.world[curr_y][curr_x], c);
-        update_trnrs_map(&universe, universe.world[curr_y][curr_x]);
-    }
+        result = update_pc_map(&universe, universe.world[curr_y][curr_x], c);
+        switch(result){
+            case 0:
+                update_trnrs_map(&universe, universe.world[curr_y][curr_x]);
+                break;
+            case 1:
+                move(21,0);
+                printw("Invalid command");
+                refresh();
+                usleep(500000);
+                deleteln();
+                break;
+            case 2:
+                map_print_terrain(&universe, universe.world[curr_y][curr_x],0);
+                in_market();
+                break;
+            case 3:
+                map_print_terrain(&universe, universe.world[curr_y][curr_x],0);
+                in_center();
+                break;
+            case 4:
+                map_print_terrain(&universe, universe.world[curr_y][curr_x],0);
+                show_list();
+                break;
+        }
+    }while(result != -1);
 
     endwin();
 
@@ -198,7 +325,9 @@ int main(int argc, char * argv[]){
     pc_init(&universe.pc, universe.world[200][200] -> rand_pos.r, universe.world[200][200] -> rand_pos.c, '@', (char)(rand()%8));
     universe.trainers[(int)universe.pc.r][(int)universe.pc.c] = '@'; 
     
-    game_loop(200,200);
+    curr_x = curr_y = 200;
+
+    game_loop();
 
     return 0;
 }

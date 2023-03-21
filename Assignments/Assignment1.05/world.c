@@ -11,13 +11,13 @@
 int offsett_r[8] = {0, 0, 1, -1, -1, 1, -1, 1};
 int offsett_c[8] = {1, -1, 0, 0, -1, 1, 1, -1};
 
-void map_print_terrain(world_t * w_t, map_t * m){
+void map_print_terrain(world_t * w_t, map_t * m, int color){
 
     int i,j;
 
     clear();
 
-    if(has_colors() == TRUE){
+    if(has_colors() == TRUE && color){
         start_color();
 
         init_pair(1, COLOR_YELLOW, COLOR_BLACK);
@@ -27,6 +27,7 @@ void map_print_terrain(world_t * w_t, map_t * m){
         init_pair(5, COLOR_CYAN, COLOR_BLACK);
         init_pair(6, COLOR_BLUE, COLOR_BLACK);
         init_pair(7, COLOR_RED, COLOR_BLACK);
+        init_pair(8, COLOR_BLACK, COLOR_WHITE);
         for(i = 0; i < ROWS; i++){
             for(j = 0; j < COLUMNS - 1; j++){
                 
@@ -94,19 +95,28 @@ void map_print_terrain(world_t * w_t, map_t * m){
                         attroff(COLOR_PAIR(2)); 
                 }
             }
-            addch('\n');
+            /*addch('\n');*/
         } 
-    }else{
-
+    }else if(has_colors()){
+        attron(COLOR_PAIR(8));
         for(i = 0; i < ROWS; i++){
             for(j = 0; j < COLUMNS - 1; j++){
-                
                 if(w_t -> trainers[i][j] != 0) 
                     addch(w_t -> trainers[i][j]);
                 else
                     addch(m -> terr[i][j]);
             }
-            addch('\n');
+        }
+        attroff(COLOR_PAIR(8));
+    }else{
+    
+        for(i = 0; i < ROWS; i++){
+            for(j = 0; j < COLUMNS - 1; j++){
+                if(w_t -> trainers[i][j] != 0) 
+                    addch(w_t -> trainers[i][j]);
+                else
+                    addch(m -> terr[i][j]);
+            }
         }
     }
 
@@ -154,7 +164,87 @@ void pc_rand_move(world_t * w_t, map_t * m){
 }
 
 int update_pc_map(world_t * w_t, map_t * m, char cx){
+    int rt, ct, r, c, move;
+
+    r = w_t -> pc.r;
+    c = w_t -> pc.c;
+
+
+    switch(cx){
+        case '7':
+        case 'y':
+            move = 4;
+            break;
+        case '8':
+        case 'k':
+            move = 3;
+            break;
+        case '9':
+        case 'u':
+            move = 6;
+            break;
+        case '6':
+        case 'l':
+            move = 0;
+            break;
+        case '3':
+        case 'n':
+            move = 5;
+            break;
+        case '2':
+        case 'j':
+            move = 2;
+            break;
+        case '1':
+        case 'b':
+            move = 7;
+            break;
+        case '4':
+        case 'h':
+            move = 1;
+            break;
+        case ' ':
+        case '5':
+        case '.':
+            return 0;
+        case '>':
+            if(w_t -> pc.cell_type == 'M'){
+                return 2;
+            }else if(w_t -> pc.cell_type == 'C'){
+                return 3;
+            }else{
+                return 1;
+            }
+            break;
+        case 't':
+            return 4;
+            break;
+        case 'Q':
+            return -1;
+        default:
+            return 1;
+    }
+
+
+    rt = r + offsett_r[move];
+    ct = c + offsett_c[move];
+
+
+    if(!OUT_OF_TERR_LIMITS(rt,ct) && w_t -> trainers[rt][ct] == 0){
+        w_t -> trainers[r][c] = 0;
+        w_t -> pc.r = rt;
+        w_t -> pc.c = ct;
+        w_t -> pc.last_move = move;
+        w_t -> trainers[rt][ct] = '@';
+        r = w_t -> pc.r;
+        c = w_t -> pc.c;
+    }else{
+        return 1;
+    }
+    w_t -> pc.cell_type = m -> terr[r][c];
+
     return 0;
+
 }
 
 int update_trnrs_map(world_t * w_t, map_t * m){
@@ -163,7 +253,7 @@ int update_trnrs_map(world_t * w_t, map_t * m){
 
     char next_move;
 
-    pc_rand_move(w_t, m);
+    /*pc_rand_move(w_t, m);*/
 
     for(i = 0; i < m -> n_trnrs; i++){
         printf("%d\n", m -> arr_trnr[i].type);

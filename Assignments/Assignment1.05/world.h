@@ -16,7 +16,7 @@ typedef struct World{
     
 } world_t;
 
-void map_print_terrain(world_t * w_t, map_t * m);
+void map_print_terrain(world_t * w_t, map_t * m, int color);
 int go_world(world_t * w_t, int x, int y, int numtrnrs_sw);
 int set_trnrs_map(world_t * w_t, map_t * m);
 int update_trnrs_map(world_t * w_t, map_t * m);
