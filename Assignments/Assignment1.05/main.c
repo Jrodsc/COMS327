@@ -140,7 +140,6 @@ void game_loop(int curr_x, int curr_y){
     while(true){
         map_print_terrain(&universe, universe.world[curr_y][curr_x]);
         
-        usleep(250000);
         dijkstra((int)universe.pc.r, (int)universe.pc.c,universe.world[curr_y][curr_x], PC, universe.cost_pc);
         if(universe.pc.cell_type != '~'){ 
             dijkstra((int)universe.pc.r, (int)universe.pc.c,universe.world[curr_y][curr_x], RIVAL, universe.cost_rival),

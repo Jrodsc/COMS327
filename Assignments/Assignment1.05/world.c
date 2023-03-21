@@ -14,63 +14,103 @@ int offsett_c[8] = {1, -1, 0, 0, -1, 1, 1, -1};
 void map_print_terrain(world_t * w_t, map_t * m){
 
     int i,j;
-    system("clear");
 
-    if(has_colors()){
-        if(start_color() == OK){
-            for(i = 0; i < ROWS; i++){
-                for(j = 0; j < COLUMNS - 1; j++){
-                    
-                    if(w_t -> trainers[i][j] != 0) {
-                        attroff(COLOR_WHITE); 
-                        addch(w_t -> trainers[i][j]);
-                        continue;
-                    }
-                    switch(m -> terr[i][j]){
-                        case '%':
-                            attroff(COLOR_YELLOW); 
-                            break;
-                        case '#':
-                            attroff(COLOR_WHITE); 
-                            break;
-                        case ':':
-                            attroff(COLOR_MAGENTA); 
-                            break;
-                        case '.':
-                            attroff(COLOR_GREEN); 
-                            break;
-                        case '^':
-                            attroff(COLOR_GREEN); 
-                            break;
-                        case '~':
-                            attroff(COLOR_CYAN); 
-                            break;
-                        case 'M':
-                            attroff(COLOR_BLUE); 
-                            break;
-                        case 'C':
-                            attroff(COLOR_RED); 
-                            break;
-                        default:
-                            attroff(COLOR_WHITE); 
-                    }
-                    addch(m -> terr[i][j]);
+    clear();
+
+    if(has_colors() == TRUE){
+        start_color();
+
+        init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+        init_pair(2, COLOR_WHITE, COLOR_BLACK);
+        init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+        init_pair(4, COLOR_GREEN, COLOR_BLACK);
+        init_pair(5, COLOR_CYAN, COLOR_BLACK);
+        init_pair(6, COLOR_BLUE, COLOR_BLACK);
+        init_pair(7, COLOR_RED, COLOR_BLACK);
+        for(i = 0; i < ROWS; i++){
+            for(j = 0; j < COLUMNS - 1; j++){
+                
+                if(w_t -> trainers[i][j] != 0) {
+                    attron(COLOR_PAIR(2)); 
+                    addch(w_t -> trainers[i][j]);
+                    attroff(COLOR_PAIR(2)); 
+                    continue;
                 }
-                addch('\n');
+                switch(m -> terr[i][j]){
+                    case '%':
+                        attron(COLOR_PAIR(1)); 
+                        break;
+                    case '#':
+                        attron(COLOR_PAIR(2)); 
+                        break;
+                    case ':':
+                        attron(COLOR_PAIR(3)); 
+                        break;
+                    case '.':
+                        attron(COLOR_PAIR(4)); 
+                        break;
+                    case '^':
+                        attron(COLOR_PAIR(4)); 
+                        break;
+                    case '~':
+                        attron(COLOR_PAIR(5)); 
+                        break;
+                    case 'M':
+                        attron(COLOR_PAIR(6)); 
+                        break;
+                    case 'C':
+                        attron(COLOR_PAIR(7)); 
+                        break;
+                    default:
+                        attron(COLOR_PAIR(2)); 
+                }
+                addch(m -> terr[i][j]);
+                switch(m -> terr[i][j]){
+                    case '%':
+                        attroff(COLOR_PAIR(1)); 
+                        break;
+                    case '#':
+                        attroff(COLOR_PAIR(2)); 
+                        break;
+                    case ':':
+                        attroff(COLOR_PAIR(3)); 
+                        break;
+                    case '.':
+                        attroff(COLOR_PAIR(4)); 
+                        break;
+                    case '^':
+                        attroff(COLOR_PAIR(4)); 
+                        break;
+                    case '~':
+                        attroff(COLOR_PAIR(5)); 
+                        break;
+                    case 'M':
+                        attroff(COLOR_PAIR(6)); 
+                        break;
+                    case 'C':
+                        attroff(COLOR_PAIR(7)); 
+                        break;
+                    default:
+                        attroff(COLOR_PAIR(2)); 
+                }
             }
+            addch('\n');
+        } 
+    }else{
+
+        for(i = 0; i < ROWS; i++){
+            for(j = 0; j < COLUMNS - 1; j++){
+                
+                if(w_t -> trainers[i][j] != 0) 
+                    addch(w_t -> trainers[i][j]);
+                else
+                    addch(m -> terr[i][j]);
+            }
+            addch('\n');
         }
     }
 
-    for(i = 0; i < ROWS; i++){
-        for(j = 0; j < COLUMNS - 1; j++){
-            
-            if(w_t -> trainers[i][j] != 0) 
-                addch(w_t -> trainers[i][j]);
-            else
-                addch(m -> terr[i][j]);
-        }
-        addch('\n');
-    }
+    refresh();
 }
 
 int set_trnrs_map(world_t * w_t, map_t * m){
@@ -123,7 +163,7 @@ int update_trnrs_map(world_t * w_t, map_t * m){
 
     char next_move;
 
-    /*pc_rand_move(w_t, m);*/
+    pc_rand_move(w_t, m);
 
     for(i = 0; i < m -> n_trnrs; i++){
         printf("%d\n", m -> arr_trnr[i].type);
