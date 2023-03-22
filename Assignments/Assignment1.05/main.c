@@ -18,7 +18,7 @@
 #include "world.h"
 
 world_t universe;
-int numtrnrs_sw, curr_x, curr_y;
+int numtrnrs_sw = 0, curr_x, curr_y;
 
 void notify(char lc, int x, int y, int succs){
     switch(lc){
@@ -191,7 +191,7 @@ void show_list(){
                 clrtoeol();
                 if(start + i == selected)
                     attron(COLOR_PAIR(1));
-                printw("%c, %d %s, %d %s",type, abs(vert_loc), ((vert_loc < 0) ? "south" : "north"), abs(hor_loc), ((hor_loc < 0) ? "west" : "east"));
+                printw("%c, %d %s, %d %s",type, abs(vert_loc), ((vert_loc < 0) ? "south" : "north"), abs(hor_loc), ((hor_loc < 0) ? "east" : "west"));
                 if(start + i == selected)
                     attroff(COLOR_PAIR(1));
             }
@@ -227,10 +227,34 @@ void show_list(){
     }while(rep != 27);
 }
 
+void in_fight(trainer_t * tr){
+    init_pair(1, COLOR_BLACK, COLOR_RED);
+    
+    move(tr -> r, tr -> c);
+    attron(COLOR_PAIR(1));
+    addch(tr -> txt);
+    attron(COLOR_PAIR(2));
+
+    move(21,0);
+
+    printw("You are n a Pokemon battle,\t (Press ESC to exit and defeat your rival!)");
+    refresh();
+    while(getch() != 27){
+        move(22,0);
+        printw("Invalid command");
+        refresh();
+        usleep(500000);
+        deleteln();
+    }
+
+    tr -> state = 1;
+
+}
 
 void game_loop(){
-    int result;
+    int result, in_b;
     char c;
+    trainer_t * tr;
 
     initscr();
     ESCDELAY = 1;
@@ -256,7 +280,13 @@ void game_loop(){
         result = update_pc_map(&universe, universe.world[curr_y][curr_x], c);
         switch(result){
             case 0:
-                update_trnrs_map(&universe, universe.world[curr_y][curr_x]);
+                in_b = update_trnrs_map(&universe, universe.world[curr_y][curr_x]);
+                if(in_b){
+                    tr = &universe.world[curr_y][curr_x] -> arr_trnr[in_b - 1];
+                    map_print_terrain(&universe, universe.world[curr_y][curr_x],0);
+                    in_fight(tr);
+                    deleteln();
+                }
                 break;
             case 1:
                 move(21,0);
@@ -277,6 +307,22 @@ void game_loop(){
                 map_print_terrain(&universe, universe.world[curr_y][curr_x],0);
                 show_list();
                 break;
+            default:
+                if(result >= 1000000){
+                    tr = &universe.world[curr_y][curr_x] -> arr_trnr[result - 1000000];
+                    if(!tr -> state){
+                        map_print_terrain(&universe, universe.world[curr_y][curr_x],0);
+                        in_fight(tr);
+                    }else{
+                        move(21,0);
+                        printw("You already defeated this trainer!");
+                        refresh();
+                        usleep(500000);
+                        deleteln();
+                    }
+                }else{
+                     
+                }
         }
     }while(result != -1);
 
@@ -316,6 +362,7 @@ int main(int argc, char * argv[]){
             universe.world[i][j] = NULL;
         }
     }
+    curr_x = curr_y = 200;
 
     universe.world[200][200] = malloc(sizeof(*universe.world[200][200]));
 
@@ -325,7 +372,7 @@ int main(int argc, char * argv[]){
     pc_init(&universe.pc, universe.world[200][200] -> rand_pos.r, universe.world[200][200] -> rand_pos.c, '@', (char)(rand()%8));
     universe.trainers[(int)universe.pc.r][(int)universe.pc.c] = '@'; 
     
-    curr_x = curr_y = 200;
+
 
     game_loop();
 

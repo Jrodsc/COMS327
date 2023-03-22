@@ -33,7 +33,10 @@ void map_print_terrain(world_t * w_t, map_t * m, int color){
                 
                 if(w_t -> trainers[i][j] != 0) {
                     attron(COLOR_PAIR(2)); 
-                    addch(w_t -> trainers[i][j]);
+                    if(w_t -> trainers[i][j] == '@')
+                        addch('@');
+                    else
+                        addch(m -> arr_trnr[w_t -> trainers[i][j]-1].txt);
                     attroff(COLOR_PAIR(2)); 
                     continue;
                 }
@@ -102,7 +105,10 @@ void map_print_terrain(world_t * w_t, map_t * m, int color){
         for(i = 0; i < ROWS; i++){
             for(j = 0; j < COLUMNS - 1; j++){
                 if(w_t -> trainers[i][j] != 0) 
-                    addch(w_t -> trainers[i][j]);
+                    if(w_t -> trainers[i][j] == '@')
+                        addch('@');
+                    else
+                        addch(m -> arr_trnr[w_t -> trainers[i][j]-1].txt);
                 else
                     addch(m -> terr[i][j]);
             }
@@ -113,7 +119,10 @@ void map_print_terrain(world_t * w_t, map_t * m, int color){
         for(i = 0; i < ROWS; i++){
             for(j = 0; j < COLUMNS - 1; j++){
                 if(w_t -> trainers[i][j] != 0) 
-                    addch(w_t -> trainers[i][j]);
+                    if(w_t -> trainers[i][j] == '@')
+                        addch('@');
+                    else
+                        addch(m -> arr_trnr[w_t -> trainers[i][j]-1].txt);
                 else
                     addch(m -> terr[i][j]);
             }
@@ -129,7 +138,8 @@ int set_trnrs_map(world_t * w_t, map_t * m){
     for(i = 0; i < ROWS; i++){
         for(j = 0; j < COLUMNS; j++){
             if(k < m -> n_trnrs && i == m -> arr_trnr[k].r && j == m -> arr_trnr[k].c){
-                w_t -> trainers[i][j] = m -> arr_trnr[k].txt;
+                w_t -> trainers[i][j] = k+1;
+                m -> arr_trnr[k].state = 0;
                 k++;
             }
             else
@@ -238,6 +248,8 @@ int update_pc_map(world_t * w_t, map_t * m, char cx){
         w_t -> trainers[rt][ct] = '@';
         r = w_t -> pc.r;
         c = w_t -> pc.c;
+    }else if(!OUT_OF_TERR_LIMITS(rt,ct) && w_t -> trainers[rt][ct] != 0){
+        return 1000000 + w_t -> trainers[rt][ct] - 1;
     }else{
         return 1;
     }
@@ -249,14 +261,14 @@ int update_pc_map(world_t * w_t, map_t * m, char cx){
 
 int update_trnrs_map(world_t * w_t, map_t * m){
     int i,j,rt,ct,r,c,isposs;
-    unsigned long long int mini;
+    int in_battle = 0;
+    int mini;
 
     char next_move;
 
     /*pc_rand_move(w_t, m);*/
 
     for(i = 0; i < m -> n_trnrs; i++){
-        printf("%d\n", m -> arr_trnr[i].type);
         mini = INF;
         rt = r = (int) m -> arr_trnr[i].r;
         ct = c = (int) m -> arr_trnr[i].c;
@@ -268,8 +280,10 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                     rt = r + offsett_r[j];
                     ct = c + offsett_c[j];
 
-                    if(w_t -> cost_hiker[rt][ct] < mini && w_t -> trainers[rt][ct] == 0){
-                        mini = w_t -> cost_hiker[rt][ct];
+                    if(!OUT_OF_TERR_LIMITS(rt,ct) && (int)(1 - 2 * (int) (m -> arr_trnr[i].state == 1)) * (int)w_t -> cost_hiker[rt][ct] < mini && (w_t -> trainers[rt][ct] == 0 || (w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle))){
+                        if(w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle) 
+                            in_battle = i+1;
+                        mini = (int)(1 - 2 * (int) (m -> arr_trnr[i].state == 1)) * (int)w_t -> cost_hiker[rt][ct];
                         next_move = (char)j;
                         isposs = 1;
                     }
@@ -282,10 +296,12 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                     rt = r;
                     ct = c;
                 }
+                if(in_battle == i + 1) 
+                    continue;
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt; 
                 m -> arr_trnr[i].c = ct;
-                w_t -> trainers[rt][ct] = 'h';
+                w_t -> trainers[rt][ct] = i+1;
                 m -> arr_trnr[i].last_move = next_move;
                 break;
             case RIVAL:
@@ -293,8 +309,10 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                     rt = r + offsett_r[j];
                     ct = c + offsett_c[j];
 
-                    if(w_t -> cost_rival[rt][ct] < mini && w_t -> trainers[rt][ct] == 0){
-                        mini = w_t -> cost_rival[rt][ct];
+                    if(!OUT_OF_TERR_LIMITS(rt,ct) && (1 - 2 * (int) m -> arr_trnr[i].state) * (int) w_t -> cost_rival[rt][ct] < mini && (w_t -> trainers[rt][ct] == 0 || (w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle))){
+                        if(w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle)
+                            in_battle = i+1;
+                        mini = (1 - 2 * (int) m -> arr_trnr[i].state) * (int) w_t -> cost_rival[rt][ct];
                         next_move = (char)j;
                         isposs = 1;
                     }
@@ -308,38 +326,49 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                     ct = c;
                 }
 
+                if(in_battle == i + 1) 
+                    continue;
+
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt;
                 m -> arr_trnr[i].c = ct;
-                w_t -> trainers[rt][ct] = 'r';
+                w_t -> trainers[rt][ct] = i+1;
                 m -> arr_trnr[i].last_move = next_move;
                 break;
             case PACER:
                 rt = r + offsett_r[(int)next_move];
                 ct = c + offsett_c[(int)next_move];
                 if(OUT_OF_TERR_LIMITS(rt,ct) || w_t -> cost_rival[rt][ct] == INF || w_t -> trainers[rt][ct] != 0){
+                    if(w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle)
+                        in_battle = i+1;
                     rt = r;
                     ct = c;
                     next_move = m -> arr_trnr[i].last_move ^ 1; 
                 }
+                if(in_battle == i + 1) 
+                    continue;
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt;
                 m -> arr_trnr[i].c = ct;
-                w_t -> trainers[rt][ct] = 'p';
+                w_t -> trainers[rt][ct] = i+1;
                 m -> arr_trnr[i].last_move = next_move;   
                 break;
             case WANDERER:
                 rt = r + offsett_r[(int)next_move];
                 ct = c + offsett_c[(int)next_move];
                 if(OUT_OF_TERR_LIMITS(rt,ct) || m -> terr[rt][ct] != m -> terr[r][c] || w_t -> trainers[rt][ct] != 0){
+                    if(w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle)
+                        in_battle = i+1;
                     rt = r;
                     ct = c;
                     next_move = (m -> arr_trnr[i].last_move + rand()%8)%8; 
                 }
+                if(in_battle == i + 1) 
+                    continue;
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt;
                 m -> arr_trnr[i].c = ct;
-                w_t -> trainers[rt][ct] = 'w';
+                w_t -> trainers[rt][ct] = i+1;
                 m -> arr_trnr[i].last_move = next_move;
                 break;
             case SENTRIE:
@@ -348,14 +377,18 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                 rt = r + offsett_r[(int)next_move];
                 ct = c + offsett_c[(int)next_move];
                 if(OUT_OF_TERR_LIMITS(rt,ct) || w_t -> trainers[rt][ct] != 0){
+                    if(w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle)
+                        in_battle = i+1;
                     rt = r;
                     ct = c;
                     next_move = (m -> arr_trnr[i].last_move + rand()%8)%8; 
                 }
+                if(in_battle == i + 1) 
+                    continue;
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt;
                 m -> arr_trnr[i].c = ct;
-                w_t -> trainers[rt][ct] = 'e';
+                w_t -> trainers[rt][ct] = i+1;
                 m -> arr_trnr[i].last_move = next_move;
                 break;
             case SWIMMER:
@@ -363,6 +396,8 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                     rt = r + offsett_r[(int)next_move];
                     ct = c + offsett_c[(int)next_move];
                     if(OUT_OF_TERR_LIMITS(rt,ct) || w_t -> trainers[rt][ct] != 0 || m -> terr[rt][ct] != '~'){
+                        if(w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle)
+                            in_battle = i+1;
                         rt = r;
                         ct = c;
                         next_move = (m -> arr_trnr[i].last_move + rand()%8)%8; 
@@ -372,8 +407,10 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                         rt = r + offsett_r[j];
                         ct = c + offsett_c[j];
 
-                        if(w_t -> cost_swimmer[rt][ct] < mini && w_t -> trainers[rt][ct] == 0 &&  m -> terr[rt][ct] == '~'){
-                            mini = w_t -> cost_swimmer[rt][ct];
+                        if(!OUT_OF_TERR_LIMITS(rt,ct) && (1 - 2 * (int) m -> arr_trnr[i].state) * (int) w_t -> cost_swimmer[rt][ct] < mini && (w_t -> trainers[rt][ct] == 0 || (w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle)) &&  m -> terr[rt][ct] == '~'){
+                            if(w_t -> trainers[rt][ct] == '@' && m -> arr_trnr[i].state == 0 && !in_battle) 
+                                in_battle = i + 1;
+                            mini = (1 - 2 * (int) m -> arr_trnr[i].state) * w_t -> cost_swimmer[rt][ct];
                             next_move = (char)j;
                             isposs = 1;
                         }
@@ -387,15 +424,17 @@ int update_trnrs_map(world_t * w_t, map_t * m){
                         ct = c;
                     }
                 }
+                if(in_battle == i + 1) 
+                    continue;
                 w_t -> trainers[r][c] = 0;
                 m -> arr_trnr[i].r = rt;
                 m -> arr_trnr[i].c = ct;
-                if(m -> terr[rt][ct] != '#') w_t -> trainers[rt][ct] = 'm';
+                if(m -> terr[rt][ct] != '#') w_t -> trainers[rt][ct] = i+1;
                 m -> arr_trnr[i].last_move = next_move;
                 break;
         }    
     }
-    return 0;
+    return in_battle;
 }
 
 

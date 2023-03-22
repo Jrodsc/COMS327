@@ -534,8 +534,8 @@ void set_trainers(map_t * m, int numtrnrs_sw){
     }
 
     qsort(&m -> arr_trnr, m -> n_trnrs, sizeof(trainer_t), cmp_trnr_pos);
+    
 }
-
 void map_set(map_t * m, int a, int b, int numtrnrs_sw){
     m -> rx = a;
     m -> ry = b;

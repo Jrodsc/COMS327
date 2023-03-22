@@ -12,6 +12,7 @@
 typedef struct trainer{
     char type, r, c, txt;
     char last_move;
+    char state;
 }trainer_t;
 
 typedef struct pc{
