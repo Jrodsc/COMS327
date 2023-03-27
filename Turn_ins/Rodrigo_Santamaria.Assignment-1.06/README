@@ -1,0 +1,12 @@
+Project explanation:
+I used the same files and structure from the previous assignment. I change the name of some variables and
+inherite the class character to pc and npcs. I also changed my heap.c to heap.cpp.
+
+Makefile:
+make <file.o> to compile an specific file
+make to compile them all
+make clean to remove the binaries
+
+Algorithm explanation:
+I used the same code from assignment 1.02 to fly and move to a different world, I just changed a few things,
+and solved some bugs.

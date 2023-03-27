@@ -1,0 +1,31 @@
+commit 8f9eaba7053a776f3fe59b727269c488dc4d2ca8
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Mar 21 23:15:52 2023 -0500
+
+    Assignment1.05 completed
+
+commit 6467329095fed7f345965cb838c8a2e70144ba89
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Mar 21 17:02:32 2023 -0500
+
+    List working perfectly
+
+commit c457a31647aad71b0f8f6b63ba843a6f97a08225
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Mar 21 00:43:28 2023 -0500
+
+    Colors working with ncurses!
+
+commit a5ab32ff634e329df0adf11161d3fad6bf4be77a
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Mar 20 17:52:12 2023 -0500
+
+    Improving main.c
+
+commit a745528f0ce9631bfa1ef5c45f48be95716ccebc
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Fri Mar 17 18:18:00 2023 -0500
+
+    Solving some bugs and adding the switch --numtrainers
+
+//End of the commits for this Assignment

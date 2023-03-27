@@ -1,4 +1,4 @@
-CC 			= g++
+CC 			= gcc
 CFLAGS 		= -Wall -Werror -ggdb 
 LDFLAGS 	= -lncurses
 OBJFILES	= player.o tlib.o priority_queue.o queue.o map.o world.o main.o

@@ -1,0 +1,19 @@
+Project explanation:
+The files are the same as the previos assignment. NCurses is added to the main.c and world.c files.
+
+Building and running:
+To compile make <file.o> (if needed)
+To run: ./PokemonGame
+
+Code explanation:
+I created a procedure for each of the possible stages, (in_market, in_center, in_battle, show_list, notify, etc)
+
+Each of those stop temporary the game loop until the user finish their tasks.
+
+Each of those at the same time make the terrain black and white, and adding some background to the cells we are
+selecting (or just relevant cells like pc or trainers)
+
+When the user press an invalid command there is a line that shows "Invalid command" for half a second.
+
+Once the a trainer have been defeated they will move as far as I can from the PC and they can fall into the water
+and stay in a loop forever (:c it's not a bug lol).
