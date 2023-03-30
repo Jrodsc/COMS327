@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ncurses.h>
@@ -133,18 +134,19 @@ void World::print_terrain(map * m, int color){
 }
 
 int World::set_trnrs_map(map * m){
-    int i,j,k = 0;
+    int i,j,k;
 
     for(i = 0; i < ROWS; i++){
         for(j = 0; j < COLUMNS; j++){
-            if(k < m -> n_trnrs && i == m -> arr_trnr[k].r && j == m -> arr_trnr[k].c){
-                trainers[i][j] = k+1;
-                m -> arr_trnr[k].state = 0;
-                k++;
-            }
-            else
-                trainers[i][j] = (char)0;
+            trainers[i][j] = (char)0;
         }
+    }
+
+    for(k = 0; k < m -> n_trnrs; k++){
+        i = m -> arr_trnr[k].r;
+        j = m -> arr_trnr[k].c;
+        trainers[i][j] = k+1;
+        m -> arr_trnr[k].state = 0;
     }
 
     trainers[pc.r][pc.c] = '@';

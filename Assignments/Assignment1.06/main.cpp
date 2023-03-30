@@ -2,6 +2,7 @@
 //Rodrigo Santamaria
 //COM S 327 Assignment1.02
 
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
@@ -394,6 +395,7 @@ int main(int argc, char * argv[]){
     universe.set_trnrs_map(universe.world[200][200]);
 
     game_loop();
+
 
     return 0;
 }
