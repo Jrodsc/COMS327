@@ -1,0 +1,24 @@
+Project explanation:
+I moved my files to 4 different directory:
+    - '/src' has all my source files (.cpp/.c)
+    - '/build' store all the object files when building the project
+    - '/include' contains all the header files
+    - '/bin' when the executables are generated
+
+I created a header for 'data_classes' that will contain my classes for
+each file. I also creater a source file in case I need to add some functions
+to my classes.
+
+Makefile:
+Same commands as the previous one:
+    make /build/[file_name].o:   will compile for main.cpp
+    make                     :   will build everything
+    make clean               :   will remove all the binaries
+
+Algorithm explanation:
+
+I used getline to capture each line and then run a for loop to separate the
+each word between commas.
+
+I created a class for each file.
+

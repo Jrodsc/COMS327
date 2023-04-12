@@ -1,0 +1,2 @@
+mkdir -p build
+g++ -Wall -Werror -ggdb -c -o build/map.o src/map.cpp -I include
