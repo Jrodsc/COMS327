@@ -1,0 +1,29 @@
+Project's explanation:
+    The project is divided in folders. 
+    src     = *.cpp
+    include = *.h
+    bin     = executables
+    build   = *.o
+    tests   = others
+
+Makefile:
+
+Make            will compile everything
+Make [file.o]   will compile only file.o
+Make clean      will delete any binary
+
+The executable is PokemonGame and is in the /bin folder, so you can run ./bin/PokemonGame
+
+Algorithm:
+
+I created a class for pokemon and added an array of pointers to pokemon to the class
+character.
+
+It has a couple of constructors that help finding moves and other information from the pokemon.
+
+At first we have the selection of the initial pokemon, one selected it will show the information
+of that pokemon in form of a scrollable list that you can exit with ESC;
+
+Every information is displayed as a scrollable list and you have to use the arrows UP and DOWN to 
+move the cursor and to see more details (the pokemon information) must press the key 'o' when the
+cursor is over the Pokemon you want to display. To exit press ESC.
