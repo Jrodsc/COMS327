@@ -194,7 +194,10 @@ int navigation(){
 }
 
 void in_market(){
-    mvwprintw(mssg_win, 0, 0, "You are inside the Poke Market,\t (Press < to exit)\n");
+    for(int i = 0; i < 3; i++){
+        universe.pc.item[i] = 5;
+    }
+    mvwprintw(mssg_win, 0, 0, "Your items were recovered in the Market, (< to exit)\n");
     wrefresh(mssg_win);
     while(wgetch(mssg_win) != '<'){
         mvwprintw(mssg_win, 1, 0, "Invalid command");
@@ -202,18 +205,24 @@ void in_market(){
         usleep(500000);
         wdeleteln(mssg_win);
     }
+    wclear(mssg_win);
+    wrefresh(mssg_win);
 }
 
 void in_center(){
-    printw("You are inside of the Poke Center,\t (Press < to exit)\n");
-    refresh();
-    while(getch() != '<'){
-        move(22,0);
-        printw("Invalid command");
-        refresh();
-        usleep(500000);
-        deleteln();
+    for(int i = 0; i < universe.pc.n_pkmn; i++){
+        universe.pc.pokemons[i] -> hp = universe.pc.pokemons[i] -> stats -> hp;
     }
+    mvwprintw(mssg_win, 0, 0, "Your pokemons were recovered in the  PokeCenter, (< to exit)\n");
+    wrefresh(mssg_win);
+    while(wgetch(mssg_win) != '<'){
+        mvwprintw(mssg_win, 1, 0, "Invalid command");
+        wrefresh(mssg_win);
+        usleep(500000);
+        wdeleteln(mssg_win);
+    }
+    wclear(mssg_win);
+    wrefresh(mssg_win);
 }
 
 void show_pokemon_info(Pokemon * pkm_t){
@@ -397,7 +406,7 @@ void show_spawn_info(Pokemon * rand_pk, int pc_sel_pk){
     trnr_text[3] = "\t+Level : " + std::to_string(rand_pk -> level);
     trnr_text[4] = "\t+HP    : " + std::to_string(rand_pk -> hp) + "/" + std::to_string(rand_pk -> stats -> hp);
 
-    for(int tr_idx = 1; tr_idx < 4; tr_idx++){
+    for(int tr_idx = 1; tr_idx < 5; tr_idx++){
         mvwprintw(trnr_pok_win, tr_idx + 1, 1, trnr_text[tr_idx].c_str());
     }
 
@@ -456,10 +465,11 @@ std::pair<int,int> process_item(character  * play, int is_wild){
         if(play -> item[res] == 0 || (res == 2 && !is_wild))
             continue;
 
-        if(res == 2 && is_wild){
+        if(res == 2 && is_wild && universe.pc.n_pkmn < 6){
             play -> item[2]--;
             return std::make_pair(-4, 0);
-        }
+        }else if(res == 2 && is_wild)
+            continue;
 
         wclear(pc_pok_win);
         box(pc_pok_win, 0, 0);
@@ -544,9 +554,9 @@ std::string get_action(int mv){
         case -3:
             return "used a revive on ";
         case -4:
-            return "PC used a pokeball and ";
+            return "used a pokeball, but failed!";
         default:
-            return "";
+            return "Tried to scape ";
     }
 }
 
@@ -582,7 +592,7 @@ int turn(Pokemon * pc_pk, int mv_pc, Pokemon * tr_pk, int mv_tr){
                 }
             }
         }else{
-            mssg_text[0] = "PC: " + get_action(mv_pc) + pc_pk -> name;
+            mssg_text[0] = "PC: " + get_action(mv_pc) + ((is_rand_pk) ? "" : pc_pk -> name);
             mssg_text[1] = ((is_rand_pk) ? "" : "Trainer: ") + tr_pk -> name + " used " + db.arr_mvs[mv_tr] -> identifier;
             if(rand() % 100 < db.arr_mvs[mv_tr] -> accuracy){
                 damage = process_move(tr_pk, mv_tr, pc_pk, rand()%256 < tr_pk -> stats -> speed >> 1); 
@@ -706,7 +716,7 @@ int scroll_list_two_two(WINDOW * win, std::string * txt){
     return -1;
 }
 
-void in_fight(npc * tr){
+int in_fight(npc * tr){
     if(!is_rand_pk){
         while(tr -> add_pokemon(&db, 1 + rand() %1092, gen_rand_level())){
             if(rand() % 100 >= 60) break;
@@ -775,8 +785,9 @@ void in_fight(npc * tr){
                     wrefresh(bottom_left);
                     usleep(500000);
                     flushinp();
+                    result = 0;
 
-                    return;
+                    break;
                 }
 
             }
@@ -788,6 +799,56 @@ void in_fight(npc * tr){
             wrefresh(bottom_left);
             usleep(500000);
             flushinp();
+            
+            if(!is_rand_pk) continue;
+            
+            trnr_move = get_tr_rand_move(tr, tr -> pokemons[tr_sel_pk], tr_sel_pk);
+
+            if(trnr_move.first == -2) tr_sel_pk = trnr_move.second;
+            
+            m_c = turn(universe.pc.pokemons[pc_sel_pk], -5, tr -> pokemons[trnr_move.second], trnr_move.first);
+
+            show_turn_mssg();
+            getch();
+
+            wclear(bottom_left);
+            box(bottom_left, 0, 0);
+            if(m_c == -1){
+                pc_sel_pk = universe.pc.has_pkm_alive();
+
+                if(pc_sel_pk == -1){
+                    result = -1;
+                    break;
+                }
+
+                do{
+                    wclear(pc_pok_win);
+                    box(pc_pok_win, 0, 0);
+                    pc_sel_pk = show_pokemon_list(pc_pok_win, universe.pc.pokemons, 1);
+
+                    if(pc_sel_pk == -1) continue;
+                    if(!universe.pc.pokemons[pc_sel_pk] -> hp){
+                        mssg_text[0] = universe.pc.pokemons[pc_sel_pk] -> name + " is fainted";
+                        mvwprintw(bottom_left, 1, 1, mssg_text[0].c_str());
+                        wrefresh(bottom_left);
+                        box(pc_pok_win, 0, 0);
+                        wrefresh(pc_pok_win);
+                        usleep(500000);
+                        flushinp();
+                    }
+                    box(pc_pok_win, 0, 0);
+                    wrefresh(pc_pok_win);
+                }while(!universe.pc.pokemons[pc_sel_pk] -> hp);
+            }
+
+            if(m_c == 1){
+                tr_sel_pk = tr -> has_pkm_alive();
+
+                if(tr_sel_pk == -1){
+                    result = 1;
+                    break;
+                }
+            }
         }else if(c == 0){
             //moves
             move_options[0]= ((universe.pc.pokemons[pc_sel_pk] -> moves_t[0] != INT_MAX) ? db.arr_mvs[universe.pc.pokemons[pc_sel_pk] -> moves_t[0]] -> identifier : "-");
@@ -816,7 +877,7 @@ void in_fight(npc * tr){
                 pc_sel_pk = universe.pc.has_pkm_alive();
 
                 if(pc_sel_pk == -1){
-                    result = -100;
+                    result = -1;
                     break;
                 }
 
@@ -844,27 +905,92 @@ void in_fight(npc * tr){
                 tr_sel_pk = tr -> has_pkm_alive();
 
                 if(tr_sel_pk == -1){
-                    result = 100;
+                    result = 1;
                     break;
                 }
             }
 
         }else if(c == 1){
-            pc_bag = process_item(&universe.pc, false);
+            pc_bag = process_item(&universe.pc, is_rand_pk);
             if(pc_bag.first == -5){
                 continue;
             }
             if(pc_bag.first == -4){
                 int cont = 0;
                 do{
+                    if(rand() % 100 < 95) cont ++;
+                    else 
+                        break;
+                }while(cont < 3);
 
-                }while(cont < 2);
+                if(cont < 3){
+                    mssg_text[0] = "Almost, there";
+                }else{
+                    mssg_text[0] = "You got, it!";
+                }
+                wclear(bottom_left);
+                box(bottom_left, 0, 0);
+                mvwprintw(bottom_left, 1, 1, mssg_text[0].c_str());
+                wrefresh(bottom_left);
+                box(pc_pok_win, 0, 0);
+                wrefresh(pc_pok_win);
+                usleep(500000);
+                flushinp();
+                if(cont == 3){
+                    result = 100;
+                    break;
+                }else{
+                    pc_bag.second = pc_sel_pk;
+                }
+
             }
 
             trnr_move = get_tr_rand_move(tr, tr -> pokemons[tr_sel_pk], tr_sel_pk);
             if(trnr_move.first == -2) tr_sel_pk = trnr_move.second;
             
             m_c = turn(universe.pc.pokemons[pc_bag.second], pc_bag.first, tr -> pokemons[trnr_move.second], trnr_move.first);
+
+            show_turn_mssg();
+            getch();
+
+            wclear(bottom_left);
+            box(bottom_left, 0, 0);
+            if(m_c == -1){
+                pc_sel_pk = universe.pc.has_pkm_alive();
+
+                if(pc_sel_pk == -1){
+                    result = -1;
+                    break;
+                }
+
+                do{
+                    wclear(pc_pok_win);
+                    box(pc_pok_win, 0, 0);
+                    pc_sel_pk = show_pokemon_list(pc_pok_win, universe.pc.pokemons, 1);
+
+                    if(pc_sel_pk == -1) continue;
+                    if(!universe.pc.pokemons[pc_sel_pk] -> hp){
+                        mssg_text[0] = universe.pc.pokemons[pc_sel_pk] -> name + " is fainted";
+                        mvwprintw(bottom_left, 1, 1, mssg_text[0].c_str());
+                        wrefresh(bottom_left);
+                        box(pc_pok_win, 0, 0);
+                        wrefresh(pc_pok_win);
+                        usleep(500000);
+                        flushinp();
+                    }
+                    box(pc_pok_win, 0, 0);
+                    wrefresh(pc_pok_win);
+                }while(!universe.pc.pokemons[pc_sel_pk] -> hp);
+            }
+
+            if(m_c == 1){
+                tr_sel_pk = tr -> has_pkm_alive();
+
+                if(tr_sel_pk == -1){
+                    result = 1;
+                    break;
+                }
+            }
         }else{
             m_c = pc_sel_pk;
             do{
@@ -900,19 +1026,83 @@ void in_fight(npc * tr){
 
             show_turn_mssg();
             getch();
+
+            wclear(bottom_left);
+            box(bottom_left, 0, 0);
+            if(m_c == -1){
+                pc_sel_pk = universe.pc.has_pkm_alive();
+
+                if(pc_sel_pk == -1){
+                    result = -1;
+                    break;
+                }
+
+                do{
+                    wclear(pc_pok_win);
+                    box(pc_pok_win, 0, 0);
+                    pc_sel_pk = show_pokemon_list(pc_pok_win, universe.pc.pokemons, 1);
+
+                    if(pc_sel_pk == -1) continue;
+                    if(!universe.pc.pokemons[pc_sel_pk] -> hp){
+                        mssg_text[0] = universe.pc.pokemons[pc_sel_pk] -> name + " is fainted";
+                        mvwprintw(bottom_left, 1, 1, mssg_text[0].c_str());
+                        wrefresh(bottom_left);
+                        box(pc_pok_win, 0, 0);
+                        wrefresh(pc_pok_win);
+                        usleep(500000);
+                        flushinp();
+                    }
+                    box(pc_pok_win, 0, 0);
+                    wrefresh(pc_pok_win);
+                }while(!universe.pc.pokemons[pc_sel_pk] -> hp);
+            }
+
+            if(m_c == 1){
+                tr_sel_pk = tr -> has_pkm_alive();
+
+                if(tr_sel_pk == -1){
+                    result = 1;
+                    break;
+                }
+            }
         }
 
 
     }while(true);
 
-    if(result){
-        return;
+    if(result == -1 || result == 1){
+        if(result == -1)
+            mssg_text[0] = "You lost this battle";
+        else
+            mssg_text[0] = "You won this battle";
+        mvwprintw(bottom_left, 1, 1, mssg_text[0].c_str());
+        wclrtoeol(bottom_left);
+        box(bottom_left, 0, 0); 
+        wrefresh(bottom_left);
+        usleep(1500000);
+        flushinp();
     }
 
+    wclear(bottom_left);
+    wclear(bottom_right);
+    wclear(pc_pok_win);
+    wclear(trnr_pok_win);
+    wrefresh(bottom_left);
+    wrefresh(bottom_right);
+    wrefresh(pc_pok_win);
+    wrefresh(trnr_pok_win);
     delwin(bottom_left);
     delwin(bottom_right);
     delwin(trnr_pok_win);
     delwin(pc_pok_win);
+
+    //if(result == -1 && universe.world[curr_y][curr_x] -> poke_c_c != -1){
+        //universe.pc.r = universe.world[curr_y][curr_x] -> poke_c_r;
+        //universe.pc.c = universe.world[curr_y][curr_x] -> poke_c_c;
+        //in_center();
+    //}
+
+    return result;
 }
 
 void spawn_pokemon(){
@@ -921,9 +1111,14 @@ void spawn_pokemon(){
 
     phantom_tr -> add_pokemon(&db, 1 + rand() % 1092, gen_rand_level());
 
+    int res;
     is_rand_pk = true;
-    in_fight(phantom_tr);
+    res = in_fight(phantom_tr);
     is_rand_pk = false;
+
+    if(res == 100){
+        universe.pc.pokemons[universe.pc.n_pkmn++] = phantom_tr -> pokemons[0];
+    }
 }
 
 void select_initial(Pc * pc_t){
@@ -972,6 +1167,7 @@ void select_initial(Pc * pc_t){
 void game_loop(){
     int result, in_b;
     char c;
+    std::pair<int,int> p_t;
     npc * tr;
 
     initscr();
@@ -997,12 +1193,12 @@ void game_loop(){
     do{
         universe.print_terrain(universe.world[curr_y][curr_x],1);
         
-        universe.world[curr_y][curr_x] -> dijkstra((int)universe.pc.r, (int)universe.pc.c, PC, universe.cost_pc);
-        if(universe.pc.cell_type != '~'){ 
+        if(universe.pc.has_pkm_alive() != -1) universe.world[curr_y][curr_x] -> dijkstra((int)universe.pc.r, (int)universe.pc.c, PC, universe.cost_pc);
+        if(universe.pc.cell_type != '~' && universe.pc.has_pkm_alive() != -1){ 
             universe.world[curr_y][curr_x] -> dijkstra((int)universe.pc.r, (int)universe.pc.c, RIVAL, universe.cost_rival),
             universe.world[curr_y][curr_x] -> dijkstra((int)universe.pc.r, (int)universe.pc.c, HIKER, universe.cost_hiker);
         }
-        universe.world[curr_y][curr_x] -> dijkstra((int)universe.pc.r, (int)universe.pc.c, SWIMMER, universe.cost_swimmer);
+        if(universe.pc.has_pkm_alive() != -1) universe.world[curr_y][curr_x] -> dijkstra((int)universe.pc.r, (int)universe.pc.c, SWIMMER, universe.cost_swimmer);
 
         c = wgetch(universe.win);
 
@@ -1011,6 +1207,7 @@ void game_loop(){
             case 0:
                 in_b = universe.update_trnrs_map(universe.world[curr_y][curr_x]);
                 if(in_b){
+                    if(universe.pc.has_pkm_alive() == -1) break;
                     tr = &universe.world[curr_y][curr_x] -> arr_trnr[in_b - 1];
                     universe.print_terrain(universe.world[curr_y][curr_x],0);
                     in_fight(tr);
@@ -1042,11 +1239,30 @@ void game_loop(){
                 navigation();
                 break;
             case RAN_POKEMON:
+                if(universe.pc.has_pkm_alive() == -1) break;
                 universe.print_terrain(universe.world[curr_y][curr_x],0);
                 spawn_pokemon();
                 break;
+            case 123456:
+                pc_pok_win = newwin(19, 40, 0, 40);
+                keypad(pc_pok_win, true);
+                p_t = process_item(&universe.pc, false);
+
+                if(p_t.first == -1){
+                    break;
+                }else{
+                    std::string s_tmp = "You " + get_action(p_t.first) + "in " + universe.pc.pokemons[p_t.second] -> name;
+                    mvwprintw(mssg_win, 21, 0, s_tmp.c_str());
+                    wrefresh(mssg_win);
+                    usleep(500000);
+                    wdeleteln(mssg_win);
+                    wrefresh(mssg_win);
+                }
+                delwin(pc_pok_win);
+                break;
             default:
                 if(result >= 1000000){
+                    if(universe.pc.has_pkm_alive() == -1) break;
                     tr = &universe.world[curr_y][curr_x] -> arr_trnr[result - 1000000];
                     if(!tr -> state){
                         in_fight(tr);

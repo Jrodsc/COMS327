@@ -10,6 +10,7 @@ class map{
     public:
         char terr[ROWS][COLUMNS];
         int rx, ry;
+        int poke_c_r, poke_c_c;
         int w_exit, e_exit, n_exit, s_exit, cross_r, cross_c;
         pos_t rand_pos;
         int n_trnrs;

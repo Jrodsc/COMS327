@@ -329,6 +329,7 @@ void map::elements(){
 
     bool pokeC = false, pokeM = false,find = false;
 
+    poke_c_c = poke_c_r = -1;
     int x,y,tr,tc;
 
     do{
@@ -360,6 +361,8 @@ void map::elements(){
                 pokeC = true;
                 market = 1;
                 terr[r][c] = terr[r+1][c] = terr[r][c+1] = terr[r+1][c+1] = 'C';
+                poke_c_c = c;
+                poke_c_r = r;
             }else{
                 store = 1;
                 pokeM = true;

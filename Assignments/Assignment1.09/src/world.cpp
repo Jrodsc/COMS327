@@ -247,6 +247,8 @@ int World::update_pc_map(map * m, char cx){
             return -1;
         case 'f':
             return 5;
+        case 'B':
+            return 123456;
         default:
             return 1;
     }
