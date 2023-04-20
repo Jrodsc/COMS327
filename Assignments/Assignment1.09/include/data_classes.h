@@ -110,7 +110,7 @@ class Pokemon_Types_data{
 };
 
 class Data{
-    private:
+   private:
         std::string files[9] = {  "pokemon",
                             "moves",
                             "pokemon_moves",

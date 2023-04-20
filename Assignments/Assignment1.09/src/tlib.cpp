@@ -2,7 +2,18 @@
 #include <stdio.h>
 #include "tlib.h"
 
+//Comparators
+
+
+bool cmp_pkm_tps_ids(Pokemon_Types_data * t1, int val){
+    return t1 -> pokemon_id < val;
+}
+
 //Basic functions
+
+std::string PKM_USE(std::string s, std::string t){
+    return s + " used " + t;
+}
 
 //Color functions
 

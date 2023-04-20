@@ -12,11 +12,19 @@
 int offsett_r[8] = {0, 0, 1, -1, -1, 1, -1, 1};
 int offsett_c[8] = {1, -1, 0, 0, -1, 1, 1, -1};
 
+void clear_lines(int start, int end){
+    for(; start <= end; start++){
+        move(start, 0);
+        clrtoeol();
+    }
+}
+
 void World::print_terrain(map * m, int color){
 
     int i,j;
 
-    clear();
+    wmove(win, 0, 0);
+    wclear(win);
 
     if(has_colors() == TRUE && color){
         start_color();
@@ -30,107 +38,109 @@ void World::print_terrain(map * m, int color){
         init_pair(7, COLOR_RED, COLOR_BLACK);
         init_pair(8, COLOR_BLACK, COLOR_WHITE);
         for(i = 0; i < ROWS; i++){
-            for(j = 0; j < COLUMNS - 1; j++){
-                
+            for(j = 0; j < COLUMNS - 1; j++){ 
                 if(trainers[i][j] != 0) {
-                    attron(COLOR_PAIR(2)); 
-                    if(trainers[i][j] == '@')
-                        addch('@');
-                    else
-                        addch(m -> arr_trnr[trainers[i][j]-1].txt);
-                    attroff(COLOR_PAIR(2)); 
+                    if(trainers[i][j] == '@'){
+                        wattron(win, COLOR_PAIR(8)); 
+                        waddch(win, '@');
+                        wattroff(win, COLOR_PAIR(8)); 
+                    }
+                    else{
+                        wattron(win, COLOR_PAIR(2)); 
+                        waddch(win, m -> arr_trnr[trainers[i][j]-1].txt);
+                        wattroff(win, COLOR_PAIR(2)); 
+                    }
                     continue;
                 }
                 switch(m -> terr[i][j]){
                     case '%':
-                        attron(COLOR_PAIR(1)); 
+                        wattron(win, COLOR_PAIR(1)); 
                         break;
                     case '#':
-                        attron(COLOR_PAIR(2)); 
+                        wattron(win, COLOR_PAIR(2)); 
                         break;
                     case ':':
-                        attron(COLOR_PAIR(3)); 
+                        wattron(win, COLOR_PAIR(3)); 
                         break;
                     case '.':
-                        attron(COLOR_PAIR(4)); 
+                        wattron(win, COLOR_PAIR(4)); 
                         break;
                     case '^':
-                        attron(COLOR_PAIR(4)); 
+                        wattron(win, COLOR_PAIR(4)); 
                         break;
                     case '~':
-                        attron(COLOR_PAIR(5)); 
+                        wattron(win, COLOR_PAIR(5)); 
                         break;
                     case 'M':
-                        attron(COLOR_PAIR(6)); 
+                        wattron(win, COLOR_PAIR(6)); 
                         break;
                     case 'C':
-                        attron(COLOR_PAIR(7)); 
+                        wattron(win, COLOR_PAIR(7)); 
                         break;
                     default:
-                        attron(COLOR_PAIR(2)); 
+                        wattron(win, COLOR_PAIR(2)); 
                 }
-                addch(m -> terr[i][j]);
+                waddch(win, m -> terr[i][j]);
                 switch(m -> terr[i][j]){
                     case '%':
-                        attroff(COLOR_PAIR(1)); 
+                        wattroff(win, COLOR_PAIR(1)); 
                         break;
                     case '#':
-                        attroff(COLOR_PAIR(2)); 
+                        wattroff(win, COLOR_PAIR(2)); 
                         break;
                     case ':':
-                        attroff(COLOR_PAIR(3)); 
+                        wattroff(win, COLOR_PAIR(3)); 
                         break;
                     case '.':
-                        attroff(COLOR_PAIR(4)); 
+                        wattroff(win, COLOR_PAIR(4)); 
                         break;
                     case '^':
-                        attroff(COLOR_PAIR(4)); 
+                        wattroff(win, COLOR_PAIR(4)); 
                         break;
                     case '~':
-                        attroff(COLOR_PAIR(5)); 
+                        wattroff(win, COLOR_PAIR(5)); 
                         break;
                     case 'M':
-                        attroff(COLOR_PAIR(6)); 
+                        wattroff(win, COLOR_PAIR(6)); 
                         break;
                     case 'C':
-                        attroff(COLOR_PAIR(7)); 
+                        wattroff(win, COLOR_PAIR(7)); 
                         break;
                     default:
-                        attroff(COLOR_PAIR(2)); 
+                        wattroff(win, COLOR_PAIR(2)); 
                 }
             }
-            /*addch('\n');*/
+            /*waddch(win, '\n');*/
         } 
     }else if(has_colors()){
-        attron(COLOR_PAIR(8));
+        wattron(win, COLOR_PAIR(8));
         for(i = 0; i < ROWS; i++){
             for(j = 0; j < COLUMNS - 1; j++){
-                if(trainers[i][j] != 0) 
-                    if(trainers[i][j] == '@')
-                        addch('@');
-                    else
-                        addch(m -> arr_trnr[trainers[i][j]-1].txt);
-                else
-                    addch(m -> terr[i][j]);
+                if(trainers[i][j] != 0) {
+                    waddch(win, m -> arr_trnr[trainers[i][j]-1].txt);
+                }
+                else{
+                    waddch(win, m -> terr[i][j]);
+                }
             }
         }
-        attroff(COLOR_PAIR(8));
+        wattroff(win, COLOR_PAIR(8));
     }else{
     
         for(i = 0; i < ROWS; i++){
             for(j = 0; j < COLUMNS - 1; j++){
                 if(trainers[i][j] != 0) 
                     if(trainers[i][j] == '@')
-                        addch('@');
+                        waddch(win, '@');
                     else
-                        addch(m -> arr_trnr[trainers[i][j]-1].txt);
+                        waddch(win, m -> arr_trnr[trainers[i][j]-1].txt);
                 else
-                    addch(m -> terr[i][j]);
+                    waddch(win, m -> terr[i][j]);
             }
         }
     }
 
-    refresh();
+    wrefresh(win);
 }
 
 int World::set_trnrs_map(map * m){
@@ -178,7 +188,7 @@ void pc_rand_move(World * w_t, map * m){
 }
 
 int World::update_pc_map(map * m, char cx){
-    int rt, ct, r, c, move;
+    int rt, ct, r, c, move_t;
 
     r = pc.r;
     c = pc.c;
@@ -187,35 +197,35 @@ int World::update_pc_map(map * m, char cx){
     switch(cx){
         case '7':
         case 'y':
-            move = 4;
+            move_t = 4;
             break;
         case '8':
         case 'k':
-            move = 3;
+            move_t = 3;
             break;
         case '9':
         case 'u':
-            move = 6;
+            move_t = 6;
             break;
         case '6':
         case 'l':
-            move = 0;
+            move_t = 0;
             break;
         case '3':
         case 'n':
-            move = 5;
+            move_t = 5;
             break;
         case '2':
         case 'j':
-            move = 2;
+            move_t = 2;
             break;
         case '1':
         case 'b':
-            move = 7;
+            move_t = 7;
             break;
         case '4':
         case 'h':
-            move = 1;
+            move_t = 1;
             break;
         case ' ':
         case '5':
@@ -242,15 +252,15 @@ int World::update_pc_map(map * m, char cx){
     }
 
 
-    rt = r + offsett_r[move];
-    ct = c + offsett_c[move];
+    rt = r + offsett_r[move_t];
+    ct = c + offsett_c[move_t];
 
 
     if(!OUT_OF_TERR_LIMITS(rt,ct) && trainers[rt][ct] == 0){
         trainers[r][c] = 0;
         pc.r = rt;
         pc.c = ct;
-        pc.last_move = move;
+        pc.last_move = move_t;
         trainers[rt][ct] = '@';
         r = pc.r;
         c = pc.c;

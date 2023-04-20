@@ -33,9 +33,9 @@ class Pokemon{
     public:
         IVs ivs;
         Stats * stats;
-        int id, level, moves_t[4];
+        int id, hp, level, moves_t[4], n_moves;
         bool shiny, genre;
-        std::string name;
+        std::string name; 
 
         void set_moves(Data * db);
 
@@ -47,10 +47,17 @@ class Pokemon{
 class character{
     public:
         Pokemon * pokemons[6];
+        int item[3];
         int n_pkmn;
         char r, c, txt, last_move;
         bool add_pokemon(Data * db, int i, int lvl);
-        character() : n_pkmn(0) {}
+        character() : n_pkmn(0) {
+            for(int j = 0; j < 6; j++){
+                item[j % 3] = 3 + rand() % 3; 
+                pokemons[j] = NULL;
+            }
+        }
+        int has_pkm_alive();
 };
 
 class npc: public character{

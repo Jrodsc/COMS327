@@ -5,6 +5,17 @@
 #include <vector>
 #include "player.h"
 
+int character::has_pkm_alive(){
+    int i;
+    for(i = 0; i < 6; i++){
+        if(NULL != pokemons[i] && pokemons[i] -> hp > 0){
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
 int npc::init(char type, int r, int c,char txt, char last_move){
    // if(!(t = malloc(sizeof(t)))){
    //     return 1;
@@ -76,9 +87,11 @@ Pokemon::Pokemon(Data * db, int i, int lvl){
 
     set_moves(db);
 
+    n_moves = 1 + (moves_t[1] != INT_MAX);
     stats = new Stats(db, &ivs, i, lvl);
     shiny = rand() % 8192 == 0;
     genre = rand() % 2;
+    hp = stats -> hp;
 }
 
 bool character::add_pokemon(Data * db, int i, int lvl){
