@@ -1,0 +1,216 @@
+commit a60c815118f4e3d8de721713278dcf5bdbea0f86
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Apr 19 23:58:41 2023 -0500
+
+    Completed!
+
+commit 46fa9d127ee8f580e44b03a3a583aac9385226d3
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Apr 19 22:33:51 2023 -0500
+
+    working
+
+commit f17bbe6d5b695c6841b8053a4d9b10aba177db04
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Apr 17 16:03:23 2023 -0500
+
+    Starting assignment 1.09
+
+///////////////////////////////////////////////
+PREVIOUS LOGS
+
+commit 6585db837be32e268706607b31e9e970a5dbbcd3
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Apr 11 21:33:50 2023 -0500
+
+    Parsing files, loading pokemons and more
+
+commit bef6501302ae3a2dc9dbfcb18aceff260122381d
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Mar 29 21:41:59 2023 -0500
+
+    Fixing some bugs
+
+commit 767f63b5230ff04e66e3a315ce5a4e62b2f72c62
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Sun Mar 26 21:19:03 2023 -0500
+
+    Assignment 1.06 completed
+
+commit 8f9eaba7053a776f3fe59b727269c488dc4d2ca8
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Mar 21 23:15:52 2023 -0500
+
+    Assignment1.05 completed
+
+commit 6467329095fed7f345965cb838c8a2e70144ba89
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Mar 21 17:02:32 2023 -0500
+
+    List working perfectly
+
+commit c457a31647aad71b0f8f6b63ba843a6f97a08225
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Mar 21 00:43:28 2023 -0500
+
+    Colors working with ncurses!
+
+commit a5ab32ff634e329df0adf11161d3fad6bf4be77a
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Mar 20 17:52:12 2023 -0500
+
+    Improving main.c
+
+commit a745528f0ce9631bfa1ef5c45f48be95716ccebc
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Fri Mar 17 18:18:00 2023 -0500
+
+    Solving some bugs and adding the switch --numtrainers
+
+commit 68b5809c283143d1e58a4b4e6a2d1b150d3fb844
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Mar 14 14:08:38 2023 -0500
+
+    Lecture 11 and 12 added
+
+commit 53634d8c387cdd9f182bc3a6aba99947102cce40
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Mar 1 21:45:01 2023 -0600
+
+    Assignment1.04 turned in
+
+commit 7d9a96ead3ffa77ee7daf0777c6da7aa4d23bf1b
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Mar 1 21:33:59 2023 -0600
+
+    Finishing, fixing swimmers bug and add other features
+
+commit a1980fcc5406fe52909c5a10506e39b5d7b99520
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Mar 1 02:10:50 2023 -0600
+
+    Adding movement to the trainers and fixing some previous bugs
+
+commit fe3811d4116e899f61be7aacd71286a62bc95cd7
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 27 23:41:37 2023 -0600
+
+    Creating world structure, player structure and adding an array of trainers to each map
+
+commit fad0eed4e7b9174cf60c1fe4dda9ad282e250cd6
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 20 00:07:23 2023 -0600
+
+    Assignment 1.03 completed
+
+commit 3570b01d37c23ea1b0cc23871e02e9308f3640a9
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Feb 8 21:50:11 2023 -0600
+
+    Lecture 6
+
+commit 1f4fab42c749a7fa1f31babbfc292b753ad4a84a
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Feb 8 21:49:30 2023 -0600
+
+    Assignment1.02 submitted
+
+commit 4c0f61d8f715548b09d930e9f39164fbccb7ee0b
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Wed Feb 8 21:21:20 2023 -0600
+
+    Assignment 1.02 Completed
+
+commit ffc0b436d2a815646f11f50164fca6643cef0a4c
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 6 22:45:03 2023 -0600
+
+    Removing .swp :p
+
+commit f6767caecf592b5f3dcfd9f8f367e08635c21c57
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 6 22:44:00 2023 -0600
+
+    Assignment1.02 created. Struct map, and library tlib created to keep it clean!
+
+commit 7631c7638bf23194f48ed2dcab23716724053202
+Merge: bca57e7 426c865
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 6 20:26:10 2023 -0600
+
+    Merge branch 'main' of https://github.com/jrodscisu/COMS_227 into main
+
+commit bca57e75c609e846d57292e554cdc3886a33f8dc
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Feb 6 19:40:24 2023 -0600
+
+    Assignment 1.01 turned in
+
+commit ab8e22c92986893f0f7cf50493a1397987bf40ff
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Jan 31 23:11:47 2023 -0600
+
+    Assignment1.01 completed
+
+commit f77d741f73a055049622e2131e6f31613eb1e83c
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Jan 31 19:21:58 2023 -0600
+
+    Lecture 5 added
+
+commit 1f27eb56894fda0f48f718e971cb9fb8e22591a0
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Mon Jan 30 00:52:23 2023 -0600
+
+    Assignment1.01 Completed
+
+commit bcbc9d6811bb8e9f39176ebfa63ba4e0fc948b96
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Sun Jan 29 20:22:39 2023 -0600
+
+    Fixing the path with no return bug
+
+commit af6147f80dc5045376e687f36dd4d0e8db534634
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Sun Jan 29 17:05:44 2023 -0600
+
+    Path_generation added, looking good!
+
+commit 426c8655f7b9808ca04cf8fc45e078eeed9f58bf
+Merge: 9001091 db46bad
+Author: jrodscisu <123523265+jrodscisu@users.noreply.github.com>
+Date:   Sat Jan 28 16:33:42 2023 -0600
+
+    Merge pull request #1 from jrodscisu/Assignment1.01
+    
+    Added exits and cross point
+
+commit db46bad5f41feeff12c82dcef937782a3f5ecb60
+Author: jrodscisu <123523265+jrodscisu@users.noreply.github.com>
+Date:   Sat Jan 28 16:32:02 2023 -0600
+
+    Added exits and cross point
+
+commit 9001091590947878964246479926d06d39bfddf7
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Sat Jan 28 14:38:02 2023 -0600
+
+    Starting Assignment1.01
+
+commit fe2e01cd5676bc76107cfd473b104859fd9b814a
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Thu Jan 26 00:58:53 2023 -0600
+
+    Assignment0 turned in
+
+commit 6efe07d77b3947a9596dda7921119685654c9f31
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Jan 24 23:23:43 2023 -0600
+
+    Adding feature: printing board
+
+commit 0a0013675a983e58cace1568b14bc6eaf036e811
+Author: Rodrigo Santamaria <jrodsc@iastate.edu>
+Date:   Tue Jan 24 20:24:46 2023 -0600
+
+    Starting the repo

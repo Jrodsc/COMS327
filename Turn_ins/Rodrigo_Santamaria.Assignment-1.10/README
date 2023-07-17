@@ -1,0 +1,37 @@
+Project explanation:
+This project is an implementation of the Hanoi Tower puzzle, which uses ncurses,
+color and a backtracking algorithm to find the steps of the optimal steps.
+
+Makefile:
+
+make        : will build and generate the executable Hanoi
+make clean  : will remove all the binaries
+
+Game instructions:
+You will have to use the cursors, the spacebar/Enter and the ESC key to interact.
+At first its printed the title of the game and the main menu with the following options:
+
+-New game       : will display a list of number of disks which you must select.
+-Continue game  : will load the last unfinished game you have played
+-Demo           : will display a list of number of disks which you must select.
+-Credits        : will display the name of the creator.
+
+In the game:
+The Goal of the game is to move the disks to the third pin (from left to right),
+you can only drop a disk if the pin is empty or if the disk at the top of the pin has a
+size lower than the disk you are droping.
+
+You have to use the 'spacebar' to pick or drop a disk.
+The Left and Right arrow to move the disk.
+
+Demo:
+Will display the optimal solution, with the arrows Left and Right you can change the speed
+of the animation.
+
+General:
+With ESC you go back or quit the game.
+
+
++++++++++++++++++++++++++++++++++++
+There is another file pol_calc.cpp which a calculator of polynomios, you can compile it and try it
+it's cool but as funny as this game lol

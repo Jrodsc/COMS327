@@ -1,0 +1,41 @@
+Project's explanation:
+    The folder contains subfolders:
+        bin/    : executables "PokemonGame" is the name of the executable
+        build   : binaries (*.o)
+        src     : source code (*.cpp)
+        inlcude : header files (*.h)
+        test    : future features to test
+
+Makefile:
+    make            : will compile all the files
+    make clean      : will delete the binaries
+    make 'file.o'   : will compile for file
+
+Program explanation:
+
+At the beginning you will have to choose a pokemon,
+then you are starting to playin. In the ':' may appear wild pokemons that you
+can capture (if you can).
+
+The battle GUI is formed by 4 windows:
+
+    -top_left     = Trainer/WildPokemon information
+    -top_right    = Your information and other menus
+    -bottom_left  = The important messages should appear here
+    -bottom_right = Your main choices are here (pokemon, fight, bag, run)
+
+    To interact during the battle you should use the arrows and the Enter key
+
+    After each turn you receive a feedback and must press any key to continue
+
+    If you have no pokemon alive then you can't fight nor find wild_pokemons until
+    you restore your pokes life.
+
+    The B key will work as a bag out of the battle.
+
+    Some messages might not be displayed because I didn't have time to code them all
+    but be aware of some intuitive actions like:
+        -Trying to apply a potion in a totally recovered pkm 
+        -Trying to apply a revive to a alive pkm
+        -Trying to capture the enemy's pokemon
+
